@@ -1,12 +1,13 @@
 "use client";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Input, Button, Checkbox } from "@heroui/react";
-import { useState } from "react";
+import { Input, Checkbox } from "@heroui/react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarGroup, AvatarIcon } from "@heroui/avatar";
+import { Avatar } from "@heroui/avatar";
 import { Form } from "@heroui/form";
 import LoginButton from "./Loginbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { useStoreUser } from "../_utils/storeuser";
 
 export interface LoginData {
   username: string;
@@ -25,21 +26,29 @@ function showTost(title: string, description: string, color: any) {
 export default function Login() {
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [trysubmit, setTrysubmit] = useState<boolean>(false);
-  const [valid, setValid] = useState({
-    pwdIsvalid: false,
-    unameIsvalid: false,
-    pwdErrorMessage: "",
-    unameErrorMessage: "",
-  });
+  const { username, password, setUsername, setPassword } = useStoreUser();
   const [form, setForm] = useState<LoginData>({
-    username: "",
-    password: "",
+    username: username,
+    password: password,
   });
+  const [remember, setRemember] = useState<boolean>(() => Boolean(username || password));
+  // 在持久化复水后同步表单
+  useEffect(() => {
+    setForm({ username, password });
+    setRemember(Boolean(username || password));
+  }, [username, password]);
+  function handleRemember(checked: boolean) {
+    if (checked) {
+      setUsername(form.username);
+      setPassword(form.password);
+    } else {
+      setUsername("");
+      setPassword("");
+    }
+  }
   async function onLogin(data: LoginData, setButtonLoading: (loading: boolean) => void) {
     try {
       setButtonLoading(true);
-      setTrysubmit(true);
       if (data.username === "" || data.password === "") {
         showTost("Error", "Username and password are required", "danger");
         setButtonLoading(false);
@@ -54,7 +63,7 @@ export default function Login() {
       });
       if (!response.ok) {
         showTost("Error", (await response.json()).message || "Unknown error", "danger");
-        setTrysubmit(false);
+        setButtonLoading(false);
       } else {
         router.push("/chat");
       }
@@ -62,7 +71,6 @@ export default function Login() {
       console.error(e);
     } finally {
       setButtonLoading(false);
-      setTrysubmit(false);
     }
   }
 
@@ -86,7 +94,7 @@ export default function Login() {
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                 isInvalid={true}
-                errorMessage={valid.unameErrorMessage}
+                errorMessage={""}
               />
               <Input
                 className="h-4"
@@ -96,13 +104,22 @@ export default function Login() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 isInvalid={true}
-                errorMessage={valid.pwdErrorMessage}
+                errorMessage={""}
               />
             </Form>
           </CardBody>
           <CardFooter className="flex h-fit flex-col items-center justify-center">
             <div className="relative mb-8 flex w-full items-start">
-              <Checkbox size="sm" className="absolute left-0 pr-4">
+              <Checkbox
+                size="sm"
+                className="absolute left-0 pr-4"
+                isSelected={remember}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setRemember(checked);
+                  handleRemember(checked);
+                }}
+              >
                 记住我
               </Checkbox>
               <span className="absolute right-0 mb-3 text-sm text-gray-500 select-none">
