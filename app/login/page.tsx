@@ -8,17 +8,23 @@ import { Form } from "@heroui/form";
 import LoginButton from "./Loginbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
+import { log } from "console";
 
 export interface LoginData {
   username: string;
   password: string;
+}
+enum inputtype {
+  pwd,
+  uname,
 }
 function showTost(title: string, description: string, color: any) {
   addToast({
     title: title,
     description: description,
     color: color,
-    variant: "flat",
+    variant: "solid",
+    radius: "lg",
     timeout: 1500,
   });
 }
@@ -32,6 +38,18 @@ export default function Login() {
     password: password,
   });
   const [remember, setRemember] = useState<boolean>(() => Boolean(username || password));
+
+  const [errorMessage, setErrorMessage] = useState<{
+    pwdIsvalid: boolean;
+    unameIsvalid: boolean;
+    pwdErrorMessage: string;
+    unameErrorMessage: string;
+  }>({
+    pwdIsvalid: false,
+    unameIsvalid: false,
+    pwdErrorMessage: "",
+    unameErrorMessage: "",
+  });
   // 在持久化复水后同步表单
   useEffect(() => {
     setForm({ username, password });
@@ -51,6 +69,8 @@ export default function Login() {
       setButtonLoading(true);
       if (data.username === "" || data.password === "") {
         showTost("Error", "Username and password are required", "danger");
+        handleinput(data.username, inputtype.uname);
+        handleinput(data.password, inputtype.pwd);
         setButtonLoading(false);
         return;
       }
@@ -62,7 +82,25 @@ export default function Login() {
         },
       });
       if (!response.ok) {
-        showTost("Error", (await response.json()).message || "Unknown error", "danger");
+        const message = (await response.json()).message;
+        showTost("Error", message || "Unknown error", "danger");
+        if (message === "用户不存在") {
+          setErrorMessage((prev) => {
+            return {
+              ...prev,
+              unameIsvalid: true,
+              unameErrorMessage: "用户名不存在",
+            };
+          });
+        } else if (message === "密码错误") {
+          setErrorMessage((prev) => {
+            return {
+              ...prev,
+              pwdIsvalid: true,
+              pwdErrorMessage: "密码错误",
+            };
+          });
+        }
         setButtonLoading(false);
       } else {
         router.push("/chat");
@@ -73,7 +111,25 @@ export default function Login() {
       setButtonLoading(false);
     }
   }
-
+  function handleinput(value: string, type: inputtype) {
+    const isEmpty = value.trim() === "";
+    // 防止非函数调用导致更新被覆盖
+    setErrorMessage((prev) => {
+      if (type === inputtype.uname) {
+        return {
+          ...prev,
+          unameIsvalid: isEmpty,
+          unameErrorMessage: isEmpty ? "用户名不能为空" : "",
+        };
+      } else {
+        return {
+          ...prev,
+          pwdIsvalid: isEmpty,
+          pwdErrorMessage: isEmpty ? "密码不能为空" : "",
+        };
+      }
+    });
+  }
   return (
     <>
       <div className="fixed z-[100]">
@@ -89,7 +145,7 @@ export default function Login() {
             <Form className="w-full">
               <Input
                 className="mb-9 h-4"
-                label="Username"
+                label="用户名"
                 name="username"
                 value={form.username}
                 onChange={(e) => {
@@ -99,12 +155,13 @@ export default function Login() {
                     setUsername(value);
                   }
                 }}
-                isInvalid={true}
-                errorMessage={""}
+                onBlur={() => handleinput(form.username, inputtype.uname)}
+                isInvalid={errorMessage.unameIsvalid}
+                errorMessage={errorMessage.unameErrorMessage}
               />
               <Input
                 className="h-4"
-                label="Password"
+                label="密码"
                 type="password"
                 name="password"
                 value={form.password}
@@ -115,8 +172,9 @@ export default function Login() {
                     setPassword(value);
                   }
                 }}
-                isInvalid={true}
-                errorMessage={""}
+                onBlur={() => handleinput(form.password, inputtype.pwd)}
+                isInvalid={errorMessage.pwdIsvalid}
+                errorMessage={errorMessage.pwdErrorMessage}
               />
             </Form>
           </CardBody>
