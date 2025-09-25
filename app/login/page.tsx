@@ -8,7 +8,6 @@ import { Form } from "@heroui/form";
 import LoginButton from "./Loginbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
-import { log } from "console";
 
 export interface LoginData {
   username: string;
