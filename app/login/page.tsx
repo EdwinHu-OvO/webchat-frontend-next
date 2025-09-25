@@ -92,7 +92,13 @@ export default function Login() {
                 label="Username"
                 name="username"
                 value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setForm({ ...form, username: value });
+                  if (remember) {
+                    setUsername(value);
+                  }
+                }}
                 isInvalid={true}
                 errorMessage={""}
               />
@@ -102,7 +108,13 @@ export default function Login() {
                 type="password"
                 name="password"
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setForm({ ...form, password: value });
+                  if (remember) {
+                    setPassword(value);
+                  }
+                }}
                 isInvalid={true}
                 errorMessage={""}
               />
