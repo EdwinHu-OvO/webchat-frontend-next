@@ -7,7 +7,6 @@ import { Avatar } from "@heroui/avatar";
 import { Form } from "@heroui/form";
 import RegisterButton from "./Registerbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { useStoreUser } from "../_utils/storeuser";
 
 export interface LoginData {
   username: string;
