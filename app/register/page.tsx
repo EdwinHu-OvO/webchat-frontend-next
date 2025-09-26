@@ -113,11 +113,8 @@ export default function Login() {
         <ToastProvider placement={"top-center"} toastOffset={30} />
       </div>
       <div className="flex h-screen items-center justify-center">
-        <Card className="fit-content h-[60vh] w-[25vw] p-2">
+        <Card className="fit-content h-[45vh] w-[25vw] p-2">
           <h1 className="pt-4 pb-2 text-center text-4xl font-thin">WebChat</h1>
-          <CardHeader className="flex items-center justify-center">
-            <Avatar size="lg" showFallback={true} src="#" className="h-20 w-20" />
-          </CardHeader>
           <CardBody className="mt-4 flex items-center">
             <Form className="w-full">
               <Input

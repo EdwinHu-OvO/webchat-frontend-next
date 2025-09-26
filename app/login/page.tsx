@@ -37,6 +37,37 @@ export default function Login() {
     password: password,
   });
   const [remember, setRemember] = useState<boolean>(() => Boolean(username || password));
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/users/search?username=${form.username}`,
+          {
+            method: "GET",
+          },
+        );
+        const data = await response.json();
+        if (response.ok) {
+          if (data !== null) {
+            console.log(data);
+            if (data.avatarUrl !== null) {
+              setAvatarUrl(`http://localhost:8080${data.avatarUrl}`);
+            } else {
+              setAvatarUrl("");
+            }
+          } else {
+            setAvatarUrl("");
+          }
+        } else {
+          setAvatarUrl("");
+        }
+      } catch (error) {
+        console.error("Failed to fetch avatar:", error);
+      }
+    };
+    fetchAvatar();
+  }, [form.username]);
 
   const [errorMessage, setErrorMessage] = useState<{
     pwdIsvalid: boolean;
@@ -138,7 +169,7 @@ export default function Login() {
         <Card className="fit-content h-[60vh] w-[25vw] p-2">
           <h1 className="pt-4 pb-2 text-center text-4xl font-thin">WebChat</h1>
           <CardHeader className="flex items-center justify-center">
-            <Avatar size="lg" showFallback={true} src="#" className="h-20 w-20" />
+            <Avatar size="lg" showFallback={false} src={avatarUrl} className="h-20 w-20" />
           </CardHeader>
           <CardBody className="mt-4 flex items-center">
             <Form className="w-full">
