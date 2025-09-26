@@ -8,6 +8,7 @@ import { Form } from "@heroui/form";
 import LoginButton from "./Loginbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
+import { baseUrl } from "../_utils/baseurl";
 
 export interface LoginData {
   username: string;
@@ -41,18 +42,15 @@ export default function Login() {
   useEffect(() => {
     const fetchAvatar = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/users/search?username=${form.username}`,
-          {
-            method: "GET",
-          },
-        );
+        const response = await fetch(`${baseUrl}/api/users/search?username=${form.username}`, {
+          method: "GET",
+        });
         const data = await response.json();
         if (response.ok) {
           if (data !== null) {
             console.log(data);
             if (data.avatarUrl !== null) {
-              setAvatarUrl(`http://localhost:8080${data.avatarUrl}`);
+              setAvatarUrl(`${baseUrl}${data.avatarUrl}`);
             } else {
               setAvatarUrl("");
             }
@@ -104,7 +102,7 @@ export default function Login() {
         setButtonLoading(false);
         return;
       }
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${baseUrl}/api/auth/login`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {

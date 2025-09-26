@@ -1,12 +1,12 @@
 "use client";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Input, Checkbox } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { Card, CardBody, CardFooter } from "@heroui/card";
+import { Input } from "@heroui/react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar } from "@heroui/avatar";
 import { Form } from "@heroui/form";
 import RegisterButton from "./Registerbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { baseUrl } from "../_utils/baseurl";
 
 export interface LoginData {
   username: string;
@@ -56,7 +56,7 @@ export default function Login() {
         setButtonLoading(false);
         return;
       }
-      const response = await fetch("http://localhost:8080/api/auth/register", {
+      const response = await fetch(`${baseUrl}/api/auth/register`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
