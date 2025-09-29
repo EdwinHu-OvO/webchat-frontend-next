@@ -9,6 +9,9 @@ import LoginButton from "./Loginbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
 import { baseUrl } from "../_utils/baseurl";
+import { useLoginState } from "../_utils/storeuser";
+import fetchAvatar from "../_components/fetchAvatar";
+import showTost from "../_components/showToast";
 
 export interface LoginData {
   username: string;
@@ -18,21 +21,12 @@ enum inputtype {
   pwd,
   uname,
 }
-function showTost(title: string, description: string, color: any) {
-  addToast({
-    title: title,
-    description: description,
-    color: color,
-    variant: "solid",
-    radius: "lg",
-    timeout: 1500,
-  });
-}
 
 export default function Login() {
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const router = useRouter();
   const { username, password, setUsername, setPassword } = useStoreUser();
+  const { setUsername: setLoginUsername } = useLoginState();
   const [form, setForm] = useState<LoginData>({
     username: username,
     password: password,
@@ -40,31 +34,7 @@ export default function Login() {
   const [remember, setRemember] = useState<boolean>(() => Boolean(username || password));
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   useEffect(() => {
-    const fetchAvatar = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/api/users/search?username=${form.username}`, {
-          method: "GET",
-        });
-        const data = await response.json();
-        if (response.ok) {
-          if (data !== null) {
-            console.log(data);
-            if (data.avatarUrl !== null) {
-              setAvatarUrl(`${baseUrl}${data.avatarUrl}`);
-            } else {
-              setAvatarUrl("");
-            }
-          } else {
-            setAvatarUrl("");
-          }
-        } else {
-          setAvatarUrl("");
-        }
-      } catch (error) {
-        console.error("Failed to fetch avatar:", error);
-      }
-    };
-    fetchAvatar();
+    fetchAvatar({ username: form.username, setAvatarUrl });
   }, [form.username]);
 
   const [errorMessage, setErrorMessage] = useState<{
@@ -96,7 +66,11 @@ export default function Login() {
     try {
       setButtonLoading(true);
       if (data.username === "" || data.password === "") {
-        showTost("Error", "Username and password are required", "danger");
+        showTost({
+          title: "Error",
+          description: "Username and password are required",
+          color: "danger",
+        });
         handleinput(data.username, inputtype.uname);
         handleinput(data.password, inputtype.pwd);
         setButtonLoading(false);
@@ -111,7 +85,7 @@ export default function Login() {
       });
       if (!response.ok) {
         const message = (await response.json()).message;
-        showTost("Error", message || "Unknown error", "danger");
+        showTost({ title: "Error", description: message || "Unknown error", color: "danger" });
         if (message === "用户不存在") {
           setErrorMessage((prev) => {
             return {
@@ -132,6 +106,7 @@ export default function Login() {
         setButtonLoading(false);
       } else {
         router.push("/chat");
+        setLoginUsername(data.username);
       }
     } catch (e) {
       console.error(e);

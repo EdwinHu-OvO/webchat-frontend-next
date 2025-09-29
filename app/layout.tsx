@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="bytefox bg-background text-foreground">
+      <body>
         <Provider>{children}</Provider>
       </body>
     </html>

@@ -9,6 +9,10 @@ type UserState = {
   setPassword: (password: string) => void;
 };
 
+type LoginState = {
+  username: string;
+  setUsername: (username: string) => void;
+};
 export const useStoreUser = create<UserState>()(
   persist(
     (set) => ({
@@ -21,6 +25,20 @@ export const useStoreUser = create<UserState>()(
       name: "webchat-user",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ username: state.username, password: state.password }),
+      version: 1,
+    },
+  ),
+);
+export const useLoginState = create<LoginState>()(
+  persist(
+    (set) => ({
+      username: "",
+      setUsername: (username: string) => set({ username }),
+    }),
+    {
+      name: "webchat-login",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ username: state.username }),
       version: 1,
     },
   ),

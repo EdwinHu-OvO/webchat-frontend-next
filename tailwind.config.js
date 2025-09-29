@@ -1,3 +1,5 @@
+// prettier-ignore
+/* eslint-disable */
 const { heroui } = require("@heroui/react")
 
 /** @type {import('tailwindcss').Config} */

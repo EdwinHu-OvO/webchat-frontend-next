@@ -1,3 +1,5 @@
+// prettier-ignore
+/* eslint-disable */
 export default {
   semi: true,
   singleQuote: false,

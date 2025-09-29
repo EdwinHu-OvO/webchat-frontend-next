@@ -16,7 +16,19 @@ enum inputtype {
   pwd,
   uname,
 }
-function showTost(title: string, description: string, color: any) {
+function showTost(
+  title: string,
+  description: string,
+  color:
+    | "success"
+    | "danger"
+    | "warning"
+    | "default"
+    | "foreground"
+    | "primary"
+    | "secondary"
+    | undefined,
+) {
   addToast({
     title: title,
     description: description,
