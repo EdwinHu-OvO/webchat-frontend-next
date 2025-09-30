@@ -10,8 +10,8 @@ import { addToast, ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
 import { baseUrl } from "../_utils/baseurl";
 import { useLoginState } from "../_utils/storeuser";
-import fetchAvatar from "../_components/fetchAvatar";
-import showTost from "../_components/showToast";
+import fetchAvatar from "@/app/_helper/fetchAvatar";
+import showTost from "@/app/_helper/showToast";
 
 export interface LoginData {
   username: string;

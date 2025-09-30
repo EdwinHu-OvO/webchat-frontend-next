@@ -3,7 +3,7 @@ import { Card, CardHeader } from "@heroui/card";
 import { baseUrl } from "../_utils/baseurl";
 import { useLoginState } from "../_utils/storeuser";
 import { Avatar } from "@heroui/avatar";
-import Hitokoto from "../_components/hitokoto";
+import Hitokoto from "@/components/hitokoto";
 function Chat() {
   const { username } = useLoginState();
   async function getAvatar() {
@@ -22,7 +22,7 @@ function Chat() {
     <div className="flex h-screen w-screen">
       {/* 左侧 */}
       <Card className="w-2/9" shadow="none" radius="none">
-        {/* <Hitokoto type={["ch", "i", "t"]} max_length={10} min_length={10} /> */}
+        <Hitokoto type={["c", "i", "t"]} max_length={8} min_length={3} />
         <CardHeader className="flex flex-col items-center justify-center">
           <Avatar size="lg" showFallback={true} src={""} className="h-20 w-20" />
           <h1>Chat</h1>

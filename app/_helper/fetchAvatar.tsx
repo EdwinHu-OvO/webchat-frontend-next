@@ -1,4 +1,4 @@
-import { baseUrl } from "../_utils/baseurl";
+import { baseUrl } from "@/app/_utils/baseurl";
 interface FetchAvatarProps {
   username: string;
   setAvatarUrl: (avatarUrl: string) => void;
