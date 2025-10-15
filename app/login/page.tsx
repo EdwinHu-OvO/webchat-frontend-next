@@ -25,8 +25,8 @@ enum inputtype {
 export default function Login() {
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { username, password, setUsername, setPassword } = useStoreUser();
-  const { setUsername: setLoginUsername } = useLoginState();
+  const { username, password, setStoreUsername, setStorePassword } = useStoreUser();
+  const { setLoginUsername, setLoginUserId } = useLoginState();
   const [form, setForm] = useState<LoginData>({
     username: username,
     password: password,
@@ -55,11 +55,11 @@ export default function Login() {
   }, [username, password]);
   function handleRemember(checked: boolean) {
     if (checked) {
-      setUsername(form.username);
-      setPassword(form.password);
+      setStoreUsername(form.username);
+      setStorePassword(form.password);
     } else {
-      setUsername("");
-      setPassword("");
+      setStoreUsername("");
+      setStorePassword("");
     }
   }
   async function onLogin(data: LoginData, setButtonLoading: (loading: boolean) => void) {
@@ -105,8 +105,10 @@ export default function Login() {
         }
         setButtonLoading(false);
       } else {
+        const data = await response.json();
         router.push("/chat");
         setLoginUsername(data.username);
+        setLoginUserId(data.id);
       }
     } catch (e) {
       console.error(e);
@@ -155,7 +157,7 @@ export default function Login() {
                   const value = e.target.value;
                   setForm({ ...form, username: value });
                   if (remember) {
-                    setUsername(value);
+                    setStoreUsername(value);
                   }
                 }}
                 onBlur={() => handleinput(form.username, inputtype.uname)}
@@ -172,7 +174,7 @@ export default function Login() {
                   const value = e.target.value;
                   setForm({ ...form, password: value });
                   if (remember) {
-                    setPassword(value);
+                    setStorePassword(value);
                   }
                 }}
                 onBlur={() => handleinput(form.password, inputtype.pwd)}

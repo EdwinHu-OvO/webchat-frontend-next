@@ -4,12 +4,17 @@ import { useEffect } from "react";
 import Hitokoto from "@/components/hitokoto";
 
 export default function Me() {
-  const { username, setUsername } = useLoginState();
+  const { username, setLoginUsername } = useLoginState();
   if (username === "") {
     return (
       <div>
-        <Hitokoto type={["c", "i", "t"]} max_length={8} min_length={3} />
         请先登录<a href="/login">登录</a>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>Me</h1>
       </div>
     );
   }

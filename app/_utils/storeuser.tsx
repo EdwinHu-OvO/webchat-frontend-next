@@ -5,21 +5,23 @@ import { persist, createJSONStorage } from "zustand/middleware";
 type UserState = {
   username: string;
   password: string;
-  setUsername: (username: string) => void;
-  setPassword: (password: string) => void;
+  setStoreUsername: (username: string) => void;
+  setStorePassword: (password: string) => void;
 };
 
 type LoginState = {
   username: string;
-  setUsername: (username: string) => void;
+  userId: string;
+  setLoginUsername: (username: string) => void;
+  setLoginUserId: (userId: string) => void;
 };
 export const useStoreUser = create<UserState>()(
   persist(
     (set) => ({
       username: "",
       password: "",
-      setUsername: (username: string) => set({ username }),
-      setPassword: (password: string) => set({ password }),
+      setStoreUsername: (username: string) => set({ username }),
+      setStorePassword: (password: string) => set({ password }),
     }),
     {
       name: "webchat-user",
@@ -32,13 +34,15 @@ export const useStoreUser = create<UserState>()(
 export const useLoginState = create<LoginState>()(
   persist(
     (set) => ({
+      userId: "",
       username: "",
-      setUsername: (username: string) => set({ username }),
+      setLoginUsername: (username: string) => set({ username }),
+      setLoginUserId: (userId: string) => set({ userId }),
     }),
     {
       name: "webchat-login",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ username: state.username }),
+      partialize: (state) => ({ username: state.username, userId: state.userId }),
       version: 1,
     },
   ),
