@@ -2,8 +2,11 @@
 import { Card, CardHeader } from "@heroui/card";
 import { useState, useEffect, useRef } from "react";
 import ChatInput from "./_Session/Input";
-import { baseUrl } from "@/app/_utils/baseurl";
 import MessageRow from "./_Session/MessageRow";
+import isToday from "./_utils/isToday";
+import withinHour from "./_utils/withinHour";
+import { MessageRowProps } from "./_utils/fetchMessages";
+import fetchMessages from "./_utils/fetchMessages";
 
 interface ChatSessionProps {
   activeSessionName: string;
@@ -11,48 +14,6 @@ interface ChatSessionProps {
   userId: string;
   activeSessionType: "friend" | "group" | null;
   activeSessionGroupId: string;
-}
-interface MessageRowProps {
-  id: number;
-  sender: {
-    id: string;
-    username: string;
-    password: string;
-  };
-  receiver: {
-    id: string;
-    username: string;
-    password: string;
-  };
-  group: null;
-  content: string;
-  createdAt: string;
-}
-export async function fetchMessages(
-  userId: string,
-  activeSessionId: string,
-  activeSessionType: "friend" | "group" | null,
-  activeSessionGroupId: string,
-  setMessages: (messages: MessageRowProps[]) => void,
-) {
-  try {
-    if (activeSessionId === "" || activeSessionType === null) {
-      setMessages([]);
-      return;
-    } else if (activeSessionType === "friend") {
-      const response = await fetch(
-        `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSessionId}`,
-      );
-      const data = await response.json();
-      setMessages(data);
-    } else if (activeSessionType === "group") {
-      const response = await fetch(`${baseUrl}/api/messages/group/${activeSessionGroupId}`);
-      const data = await response.json();
-      setMessages(data);
-    }
-  } catch (error) {
-    console.error(error);
-  }
 }
 
 export default function ChatSession({
@@ -65,7 +26,13 @@ export default function ChatSession({
   const [messages, setMessages] = useState<MessageRowProps[]>([]);
   const [inputHeight, setInputHeight] = useState<number>(1);
   useEffect(() => {
-    fetchMessages(userId, activeSessionId, activeSessionType, activeSessionGroupId, setMessages);
+    fetchMessages({
+      userId,
+      activeSessionId,
+      activeSessionType,
+      activeSessionGroupId,
+      setMessages,
+    });
   }, [activeSessionId, activeSessionType, activeSessionGroupId]);
   const messageArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -77,7 +44,7 @@ export default function ChatSession({
     <Card className="bg-content2 relative w-7/9 min-w-[500px]" shadow="none" radius="none">
       <div className="h-full overflow-y-auto scroll-smooth" ref={messageArea}>
         <CardHeader className="border-content3 sticky top-0 left-0 h-20 border-1 bg-[#ffffffa6] shadow-md backdrop-blur-sm">
-          <h1>{activeSessionName}</h1>
+          <h1 className="text-2xl">{activeSessionName}</h1>
         </CardHeader>
         <ChatMessages messages={messages} userId={userId} className="mb-20 px-5 pt-5" />
         <ChatInput
@@ -100,9 +67,22 @@ function ChatMessages({
 }) {
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      {messages.map((message) => (
-        <MessageRow key={message.id} {...message} userId={userId} />
-      ))}
+      {messages.map((message, index) => {
+        if (index === 0) {
+          const today = new Date().toISOString();
+          const needDivder = !(isToday(message.createdAt) && withinHour(message.createdAt, today));
+          return (
+            <MessageRow key={message.id} {...message} userId={userId} needDivder={needDivder} />
+          );
+        } else {
+          const t1 = message.createdAt;
+          const t2 = messages[index - 1].createdAt;
+          const needDivder = !withinHour(t1, t2);
+          return (
+            <MessageRow key={message.id} {...message} userId={userId} needDivder={needDivder} />
+          );
+        }
+      })}
     </div>
   );
 }

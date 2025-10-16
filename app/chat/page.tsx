@@ -12,9 +12,8 @@ import { Tabs, Tab } from "@heroui/tabs";
 import ChatSession from "./ChatSession";
 import UserInfo from "./UserInfo";
 import { Button } from "@heroui/button";
-import { fetchMessages } from "./ChatSession";
 
-function Chat() {
+export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -74,9 +73,6 @@ function Chat() {
             }}
             className="justify-center px-1"
             color="primary"
-            onSelectionChange={(e) => {
-              // 触发消息重渲染
-            }}
           >
             <Tab key="friend" title="好友" className="h-full">
               <div className="bg-content2 h-full rounded-xl">
@@ -113,5 +109,3 @@ function Chat() {
     </div>
   );
 }
-
-export default Chat;
