@@ -9,13 +9,11 @@ import FriendList from "./FriendList";
 import fetchAvatar from "../_helper/fetchAvatar";
 import { useRouter } from "next/navigation";
 import _Hitokoto from "./Hitokoto";
-import getUserIdbyname from "../_utils/getUserIdbyname";
 
 function Chat() {
   const router = useRouter();
   const [_username, set_Username] = useState<string>("loading");
-  const { username } = useLoginState();
-  // const userId = getUserIdbyname(username);
+  const { username, userId } = useLoginState();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   useEffect(() => {
     set_Username(username);
@@ -33,14 +31,25 @@ function Chat() {
         <CardHeader className="flex flex-col items-center justify-center">
           <_Hitokoto hitokoto={hitokoto} />
           <div className="mt-4 mb-1">
-            <Avatar size="lg" showFallback={true} src={avatarUrl} className="h-20 w-20" />
+            <Avatar
+              size="lg"
+              showFallback={true}
+              src={avatarUrl}
+              name={_username}
+              className="h-20 w-20"
+            />
           </div>
-          <h1 className="text-xl" onClick={() => router.push("/me")}>
+          <h1
+            className="hover:text-primary cursor-pointer text-xl"
+            onClick={() => router.push("/me")}
+          >
             {_username}
           </h1>
         </CardHeader>
         <CardBody>
-          <FriendList userId={"1"} />
+          <div className="bg-content2 h-full rounded-xl">
+            <FriendList userId={userId} />
+          </div>
         </CardBody>
       </Card>
       {/* 右侧 */}
