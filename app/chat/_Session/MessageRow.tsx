@@ -1,4 +1,6 @@
 import { Avatar } from "@heroui/avatar";
+import { useState, useEffect } from "react";
+import fetchAvatar from "@/app/_helper/fetchAvatar";
 interface MessageRowProps {
   id: number;
   sender: {
@@ -26,7 +28,10 @@ export default function MessageRow({
   const isSelf: boolean = Number(sender.id) === Number(userId);
   const date = new Date(createdAt);
   const formattedDate = date.toLocaleTimeString().slice(0, 5);
-
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  useEffect(() => {
+    fetchAvatar({ username: sender.username, setAvatarUrl });
+  }, [sender.username]);
   if (isSelf) {
     return (
       <div>
@@ -45,7 +50,7 @@ export default function MessageRow({
               <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
                 {content}
               </p>
-              <Avatar size="sm" name={sender.username} />
+              <Avatar size="sm" name={sender.username} src={avatarUrl} />
             </div>
             <p className="mr-11 text-sm text-gray-400">{formattedDate}</p>
           </div>
@@ -67,7 +72,7 @@ export default function MessageRow({
             <h2 className="ml-11 text-sm">{sender.username}</h2>
             {/* bubble */}
             <div className="flex flex-row gap-2">
-              <Avatar size="sm" name={sender.username} />
+              <Avatar size="sm" name={sender.username} src={avatarUrl} />
               <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
                 {content}
               </p>

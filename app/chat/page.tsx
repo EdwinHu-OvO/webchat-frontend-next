@@ -24,7 +24,7 @@ export default function Chat() {
     groupId: string;
   }>({
     id: "",
-    username: "未选择",
+    username: "未选择会话",
     type: null,
     groupId: "",
   });

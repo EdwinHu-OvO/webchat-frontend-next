@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
+import fetchAvatar from "../_helper/fetchAvatar";
 
 interface GroupListProps {
   userId: string;
@@ -22,7 +23,7 @@ export default function GroupList({ userId, setActiveSession }: GroupListProps) 
   const [selectedListItem, setSelectedListItem] = useState<string | null>(null);
   useEffect(() => {
     fetchGroupList();
-    setActiveSession({ id: "", username: "未选择", type: null, groupId: "" });
+    setActiveSession({ id: "", username: "未选择会话", type: null, groupId: "" });
   }, [userId]);
   async function fetchGroupList() {
     try {
@@ -40,12 +41,16 @@ export default function GroupList({ userId, setActiveSession }: GroupListProps) 
           return (
             <div key={group.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
               <User
-                description={`id:${group.id}`}
+                description={`GroupId:${group.id}`}
                 name={group.name}
                 className={cn(
                   "flex w-full justify-start rounded-xl p-3",
                   selectedListItem === group.id && "bg-[#e5eef5cc]",
                 )}
+                avatarProps={{
+                  src: "",
+                  name: group.name,
+                }}
                 onClick={() => {
                   setSelectedListItem(group.id);
                   setActiveSession({
@@ -63,7 +68,7 @@ export default function GroupList({ userId, setActiveSession }: GroupListProps) 
           return (
             <div key={group.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
               <User
-                description={`id:${group.id}`}
+                description={`GroupId:${group.id}`}
                 name={group.name}
                 className={cn(
                   "flex w-full justify-start rounded-xl p-3",

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
+import fetchAvatar from "../_helper/fetchAvatar";
 
 interface FriendListProps {
   userId: string;
@@ -26,7 +27,7 @@ export default function FriendList({ userId, setActiveSession }: FriendListProps
   const [selectedListItem, setSelectedListItem] = useState<string | null>(null);
   useEffect(() => {
     fetchFriendList();
-    setActiveSession({ id: "", username: "未选择", type: null, groupId: "" });
+    setActiveSession({ id: "", username: "未选择会话", type: null, groupId: "" });
   }, [userId]);
   async function fetchFriendList() {
     try {
@@ -45,10 +46,10 @@ export default function FriendList({ userId, setActiveSession }: FriendListProps
             <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
               <User
                 avatarProps={{
-                  src: friend.friend.avatarUrl,
+                  src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
                   name: friend.friend.username,
                 }}
-                description={`id:${friend.id}`}
+                description={`UserId:${friend.friend.id}`}
                 name={friend.friend.username}
                 className={cn(
                   "flex w-full justify-start rounded-xl p-3",
@@ -72,10 +73,10 @@ export default function FriendList({ userId, setActiveSession }: FriendListProps
             <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
               <User
                 avatarProps={{
-                  src: friend.friend.avatarUrl,
+                  src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
                   name: friend.friend.username,
                 }}
-                description={`id:${friend.id}`}
+                description={`UserId:${friend.friend.id}`}
                 name={friend.friend.username}
                 className={cn(
                   "flex w-full justify-start rounded-xl p-3",
