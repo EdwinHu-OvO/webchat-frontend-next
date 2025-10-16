@@ -28,6 +28,32 @@ interface MessageRowProps {
   content: string;
   createdAt: string;
 }
+export async function fetchMessages(
+  userId: string,
+  activeSessionId: string,
+  activeSessionType: "friend" | "group" | null,
+  activeSessionGroupId: string,
+  setMessages: (messages: MessageRowProps[]) => void,
+) {
+  try {
+    if (activeSessionId === "" || activeSessionType === null) {
+      setMessages([]);
+      return;
+    } else if (activeSessionType === "friend") {
+      const response = await fetch(
+        `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSessionId}`,
+      );
+      const data = await response.json();
+      setMessages(data);
+    } else if (activeSessionType === "group") {
+      const response = await fetch(`${baseUrl}/api/messages/group/${activeSessionGroupId}`);
+      const data = await response.json();
+      setMessages(data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export default function ChatSession({
   activeSessionName,
@@ -38,34 +64,9 @@ export default function ChatSession({
 }: ChatSessionProps) {
   const [messages, setMessages] = useState<MessageRowProps[]>([]);
   const [inputHeight, setInputHeight] = useState<number>(1);
-  async function fetchMessages(
-    userId: string,
-    activeSessionId: string,
-    activeSessionType: "friend" | "group" | null,
-    activeSessionGroupId: string,
-  ) {
-    try {
-      console.log(activeSessionId, activeSessionType, activeSessionGroupId);
-      if (activeSessionId === "" || activeSessionType === null) {
-        return;
-      } else if (activeSessionType === "friend") {
-        const response = await fetch(
-          `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSessionId}`,
-        );
-        const data = await response.json();
-        setMessages(data);
-      } else if (activeSessionType === "group") {
-        const response = await fetch(`${baseUrl}/api/messages/group/${activeSessionGroupId}`);
-        const data = await response.json();
-        setMessages(data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
   useEffect(() => {
-    fetchMessages(userId, activeSessionId, activeSessionType, activeSessionGroupId);
-  }, [activeSessionId, userId, activeSessionType, activeSessionGroupId]);
+    fetchMessages(userId, activeSessionId, activeSessionType, activeSessionGroupId, setMessages);
+  }, [activeSessionId, activeSessionType, activeSessionGroupId]);
   const messageArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (messageArea.current) {
