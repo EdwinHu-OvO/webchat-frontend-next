@@ -14,6 +14,9 @@ importers:
       axios:
         specifier: ^1.12.2
         version: 1.12.2
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       framer-motion:
         specifier: ^12.23.18
         version: 12.23.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -26,6 +29,9 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
+      tailwind-merge:
+        specifier: ^3.3.1
+        version: 3.3.1
       zustand:
         specifier: ^5.0.8
         version: 5.0.8(@types/react@19.1.13)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))

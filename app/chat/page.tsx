@@ -17,7 +17,17 @@ function Chat() {
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
-  const [activeSession, setActiveSession] = useState<string>("");
+  const [activeSession, setActiveSession] = useState<{
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  }>({
+    id: "",
+    username: "未选择",
+    type: null,
+    groupId: "",
+  });
   const router = useRouter();
   useEffect(() => {
     set_Username(username);
@@ -71,7 +81,7 @@ function Chat() {
                     +
                   </Button>
                 </div>
-                <FriendList userId={userId} />
+                <FriendList userId={userId} setActiveSession={setActiveSession} />
               </div>
             </Tab>
             <Tab key="group" title="群组" className="h-full">
@@ -81,7 +91,7 @@ function Chat() {
                     +
                   </Button>
                 </div>
-                <GroupList userId={userId} />
+                <GroupList userId={userId} setActiveSession={setActiveSession} />
               </div>
             </Tab>
           </Tabs>
@@ -89,7 +99,13 @@ function Chat() {
         </CardBody>
       </Card>
       {/* 右侧 */}
-      <ChatSession activeSession={activeSession} userId={userId} />
+      <ChatSession
+        activeSessionName={activeSession.username}
+        activeSessionId={activeSession.id}
+        userId={userId}
+        activeSessionType={activeSession.type}
+        activeSessionGroupId={activeSession.groupId}
+      />
     </div>
   );
 }

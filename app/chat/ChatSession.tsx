@@ -1,12 +1,16 @@
 "use client";
 import { Card, CardHeader } from "@heroui/card";
-import { Button, Textarea } from "@heroui/react";
 import { useState, useEffect, useRef } from "react";
-import { Avatar } from "@heroui/avatar";
 import ChatInput from "./_Session/Input";
+import { baseUrl } from "@/app/_utils/baseurl";
+import MessageRow from "./_Session/MessageRow";
+
 interface ChatSessionProps {
-  activeSession: string;
+  activeSessionName: string;
+  activeSessionId: string;
   userId: string;
+  activeSessionType: "friend" | "group" | null;
+  activeSessionGroupId: string;
 }
 interface MessageRowProps {
   id: number;
@@ -24,96 +28,77 @@ interface MessageRowProps {
   content: string;
   createdAt: string;
 }
-export default function ChatSession({ activeSession, userId }: ChatSessionProps) {
+
+export default function ChatSession({
+  activeSessionName,
+  activeSessionId,
+  activeSessionType,
+  activeSessionGroupId,
+  userId,
+}: ChatSessionProps) {
   const [messages, setMessages] = useState<MessageRowProps[]>([]);
   const [inputHeight, setInputHeight] = useState<number>(1);
+  async function fetchMessages(
+    userId: string,
+    activeSessionId: string,
+    activeSessionType: "friend" | "group" | null,
+    activeSessionGroupId: string,
+  ) {
+    try {
+      console.log(activeSessionId, activeSessionType, activeSessionGroupId);
+      if (activeSessionId === "" || activeSessionType === null) {
+        return;
+      } else if (activeSessionType === "friend") {
+        const response = await fetch(
+          `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSessionId}`,
+        );
+        const data = await response.json();
+        setMessages(data);
+      } else if (activeSessionType === "group") {
+        const response = await fetch(`${baseUrl}/api/messages/group/${activeSessionGroupId}`);
+        const data = await response.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        sender: {
-          id: "1",
-          username: "user1",
-          password: "pass1",
-        },
-        receiver: {
-          id: "2",
-          username: "user2",
-          password: "pass2",
-        },
-        group: null,
-        content: "你好！",
-        createdAt: "2025-01-01T10:00:00Z",
-      },
-      {
-        id: 2,
-        sender: {
-          id: "2",
-          username: "user2",
-          password: "pass2",
-        },
-        receiver: {
-          id: "2",
-          username: "user1",
-          password: "pass1",
-        },
-        group: null,
-        content: "你好，很高兴认识你！",
-        createdAt: "2025-01-01T10:01:00Z",
-      },
-    ]);
-  }, []);
+    fetchMessages(userId, activeSessionId, activeSessionType, activeSessionGroupId);
+  }, [activeSessionId, userId, activeSessionType, activeSessionGroupId]);
+  const messageArea = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (messageArea.current) {
+      messageArea.current.scrollTop = messageArea.current.scrollHeight;
+    }
+  }, [messages]);
   return (
     <Card className="bg-content2 relative w-7/9 min-w-[500px]" shadow="none" radius="none">
-      <div className="h-full overflow-y-auto">
+      <div className="h-full overflow-y-auto scroll-smooth" ref={messageArea}>
         <CardHeader className="border-content3 sticky top-0 left-0 h-20 border-1 bg-[#ffffffa6] shadow-md backdrop-blur-sm">
-          <h1>{userId}</h1>
+          <h1>{activeSessionName}</h1>
         </CardHeader>
-        <ChatMessages messages={messages} userId={userId} />
-        <ChatInput inputHeight={inputHeight} setInputHeight={setInputHeight} />
+        <ChatMessages messages={messages} userId={userId} className="mb-20 px-5 pt-5" />
+        <ChatInput
+          inputHeight={inputHeight}
+          setInputHeight={setInputHeight}
+          activeSessionId={activeSessionId}
+        />
       </div>
     </Card>
   );
 }
-function MessageRow({ content, sender, createdAt, userId }: MessageRowProps & { userId: string }) {
-  const isSelf: boolean = Number(sender.id) === Number(userId);
-  if (isSelf) {
-    return (
-      <div className="flex w-full justify-end">
-        <div className="flex flex-col items-end gap-2">
-          <h2>{sender.username}</h2>
-          {/* bubble */}
-          <div className="flex flex-row gap-2">
-            <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
-              {content}
-            </p>
-            <Avatar size="sm" name={sender.username} />
-          </div>
-          <p>{createdAt}</p>
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex w-full justify-start">
-        <div className="flex flex-col gap-2">
-          <h2>{sender.username}</h2>
-          {/* bubble */}
-          <div className="flex flex-row gap-2">
-            <Avatar size="sm" name={sender.username} />
-            <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
-              {content}
-            </p>
-          </div>
-          <p>{createdAt}</p>
-        </div>
-      </div>
-    );
-  }
-}
-function ChatMessages({ messages, userId }: { messages: MessageRowProps[]; userId: string }) {
+function ChatMessages({
+  messages,
+  userId,
+  className,
+}: {
+  messages: MessageRowProps[];
+  userId: string;
+  className: string;
+}) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={`flex flex-col gap-2 ${className}`}>
       {messages.map((message) => (
         <MessageRow key={message.id} {...message} userId={userId} />
       ))}

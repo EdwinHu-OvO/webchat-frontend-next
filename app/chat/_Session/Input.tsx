@@ -2,16 +2,19 @@
 import { useRef } from "react";
 import { Textarea } from "@heroui/react";
 import { Button } from "@heroui/button";
+interface ChatInputProps {
+  inputHeight: number;
+  setInputHeight: (height: number) => void;
+  activeSessionId: string;
+}
 export default function ChatInput({
   inputHeight,
   setInputHeight,
-}: {
-  inputHeight: number;
-  setInputHeight: (height: number) => void;
-}) {
+  activeSessionId,
+}: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   return (
-    <div className="border-content3 absolute bottom-0 left-0 flex w-full items-start justify-start gap-2 border-1 bg-[#ffffffa6] p-3 shadow-md backdrop-blur-sm">
+    <div className="border-content3 absolute bottom-0 left-0 flex w-full items-start justify-start gap-2 border-1 bg-[#ffffffa6] p-3 shadow-md backdrop-blur-sm duration-800">
       <Textarea
         placeholder="输入消息(按Ctrl+Enter发送)"
         minRows={inputHeight}
@@ -25,7 +28,11 @@ export default function ChatInput({
           setInputHeight(1);
         }}
       />
-      <Button color="primary" size="sm">
+      <Button
+        color={activeSessionId === "" ? "default" : "primary"}
+        size="sm"
+        disabled={activeSessionId === "" ? true : false}
+      >
         发送
       </Button>
     </div>

@@ -2,18 +2,27 @@
 import { useState, useEffect } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
+import { cn } from "@/utils/cn";
 
 interface GroupListProps {
   userId: string;
+  setActiveSession: (session: {
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  }) => void;
 }
 interface Group {
   id: string;
   name: string;
 }
-export default function GroupList({ userId }: GroupListProps) {
+export default function GroupList({ userId, setActiveSession }: GroupListProps) {
   const [groupList, setGroupList] = useState<Group[]>([]);
+  const [selectedListItem, setSelectedListItem] = useState<string | null>(null);
   useEffect(() => {
     fetchGroupList();
+    setActiveSession({ id: "", username: "未选择", type: null, groupId: "" });
   }, [userId]);
   async function fetchGroupList() {
     try {
@@ -33,7 +42,19 @@ export default function GroupList({ userId }: GroupListProps) {
               <User
                 description={`id:${group.id}`}
                 name={group.name}
-                className="flex w-full justify-start rounded-xl p-3 active:bg-[#e5eef5cc]"
+                className={cn(
+                  "flex w-full justify-start rounded-xl p-3",
+                  selectedListItem === group.id && "bg-[#e5eef5cc]",
+                )}
+                onClick={() => {
+                  setSelectedListItem(group.id);
+                  setActiveSession({
+                    id: group.id,
+                    username: group.name,
+                    type: "group",
+                    groupId: group.id,
+                  });
+                }}
               />
               <Divider className="w-[95%]" />
             </div>
@@ -44,7 +65,19 @@ export default function GroupList({ userId }: GroupListProps) {
               <User
                 description={`id:${group.id}`}
                 name={group.name}
-                className="flex w-full justify-start rounded-xl p-3 active:bg-[#e5eef5cc]"
+                className={cn(
+                  "flex w-full justify-start rounded-xl p-3",
+                  selectedListItem === group.id && "bg-[#e5eef5cc]",
+                )}
+                onClick={() => {
+                  setSelectedListItem(group.id);
+                  setActiveSession({
+                    id: group.id,
+                    username: group.name,
+                    type: "group",
+                    groupId: group.id,
+                  });
+                }}
               />
             </div>
           );

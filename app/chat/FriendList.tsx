@@ -1,10 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
+import { cn } from "@/utils/cn";
 
 interface FriendListProps {
   userId: string;
+  setActiveSession: (session: {
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  }) => void;
 }
 interface Friend {
   friend: {
@@ -14,10 +21,12 @@ interface Friend {
   };
   id: string;
 }
-export default function FriendList({ userId }: FriendListProps) {
+export default function FriendList({ userId, setActiveSession }: FriendListProps) {
   const [friendList, setFriendList] = useState<Friend[]>([]);
+  const [selectedListItem, setSelectedListItem] = useState<string | null>(null);
   useEffect(() => {
     fetchFriendList();
+    setActiveSession({ id: "", username: "未选择", type: null, groupId: "" });
   }, [userId]);
   async function fetchFriendList() {
     try {
@@ -41,7 +50,19 @@ export default function FriendList({ userId }: FriendListProps) {
                 }}
                 description={`id:${friend.id}`}
                 name={friend.friend.username}
-                className="flex w-full justify-start rounded-xl p-3 active:bg-[#e5eef5cc]"
+                className={cn(
+                  "flex w-full justify-start rounded-xl p-3",
+                  selectedListItem === friend.id && "bg-[#e5eef5cc]",
+                )}
+                onClick={() => {
+                  setSelectedListItem(friend.id);
+                  setActiveSession({
+                    id: friend.friend.id,
+                    username: friend.friend.username,
+                    type: "friend",
+                    groupId: "",
+                  });
+                }}
               />
               <Divider className="w-[95%]" />
             </div>
@@ -56,7 +77,19 @@ export default function FriendList({ userId }: FriendListProps) {
                 }}
                 description={`id:${friend.id}`}
                 name={friend.friend.username}
-                className="flex w-full justify-start rounded-xl p-3 active:bg-[#e5eef5cc]"
+                className={cn(
+                  "flex w-full justify-start rounded-xl p-3",
+                  selectedListItem === friend.id && "bg-[#e5eef5cc]",
+                )}
+                onClick={() => {
+                  setSelectedListItem(friend.id);
+                  setActiveSession({
+                    id: friend.friend.id,
+                    username: friend.friend.username,
+                    type: "friend",
+                    groupId: "",
+                  });
+                }}
               />
             </div>
           );
