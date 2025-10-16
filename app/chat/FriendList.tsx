@@ -29,7 +29,7 @@ export default function FriendList({ userId }: FriendListProps) {
     }
   }
   return (
-    <div>
+    <div className="py-2">
       {friendList.map((friend, index) => {
         if (index !== friendList.length - 1) {
           return (

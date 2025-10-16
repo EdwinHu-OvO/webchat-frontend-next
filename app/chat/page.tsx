@@ -9,6 +9,8 @@ import FriendList from "./FriendList";
 import fetchAvatar from "../_helper/fetchAvatar";
 import { useRouter } from "next/navigation";
 import _Hitokoto from "./Hitokoto";
+import GroupList from "./GroupList";
+import { Tabs, Tab } from "@heroui/tabs";
 
 function Chat() {
   const router = useRouter();
@@ -24,6 +26,18 @@ function Chat() {
     max_length: 13,
     min_length: 10,
   });
+  const tabs = [
+    {
+      id: "friend",
+      label: "好友",
+      content: "",
+    },
+    {
+      id: "group",
+      label: "群组",
+      content: "群组列表",
+    },
+  ];
   return (
     <div className="flex h-screen w-screen">
       {/* 左侧 */}
@@ -47,9 +61,26 @@ function Chat() {
           </h1>
         </CardHeader>
         <CardBody>
-          <div className="bg-content2 h-full rounded-xl">
-            <FriendList userId={userId} />
-          </div>
+          <Tabs
+            classNames={{
+              tabList: "w-full relative rounded-lg p-0",
+              cursor: "w-full bg-primary",
+              tabContent: "group-data-[selected=true]:text-content1 text-[#3e3e3e]",
+            }}
+            className="justify-center px-1"
+            color="primary"
+          >
+            <Tab key="friend" title="好友" className="h-full">
+              <div className="bg-content2 h-full rounded-xl">
+                <FriendList userId={userId} />
+              </div>
+            </Tab>
+            <Tab key="group" title="群组" className="h-full">
+              <div className="bg-content2 h-full rounded-xl">
+                <GroupList userId={userId} />
+              </div>
+            </Tab>
+          </Tabs>
         </CardBody>
       </Card>
       {/* 右侧 */}
