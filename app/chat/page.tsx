@@ -1,8 +1,6 @@
 "use client";
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { baseUrl } from "../_utils/baseurl";
 import { useLoginState } from "../_utils/storeuser";
-import { Avatar } from "@heroui/avatar";
 import Hitokoto from "@/components/hitokoto";
 import { useState, useEffect } from "react";
 import FriendList from "./FriendList";
@@ -11,12 +9,16 @@ import { useRouter } from "next/navigation";
 import _Hitokoto from "./Hitokoto";
 import GroupList from "./GroupList";
 import { Tabs, Tab } from "@heroui/tabs";
+import ChatSession from "./ChatSession";
+import UserInfo from "./UserInfo";
+import { Button } from "@heroui/button";
 
 function Chat() {
-  const router = useRouter();
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [activeSession, setActiveSession] = useState<string>("");
+  const router = useRouter();
   useEffect(() => {
     set_Username(username);
     fetchAvatar({ username: username, setAvatarUrl });
@@ -26,39 +28,31 @@ function Chat() {
     max_length: 13,
     min_length: 10,
   });
-  const tabs = [
-    {
-      id: "friend",
-      label: "好友",
-      content: "",
-    },
-    {
-      id: "group",
-      label: "群组",
-      content: "群组列表",
-    },
-  ];
+  function logout() {
+    localStorage.removeItem("webchat-login");
+    router.push("/login");
+  }
   return (
     <div className="flex h-screen w-screen">
       {/* 左侧 */}
       <Card className="w-2/9 min-w-xs" shadow="none" radius="none">
-        <CardHeader className="flex flex-col items-center justify-center">
-          <_Hitokoto hitokoto={hitokoto} />
-          <div className="mt-4 mb-1">
-            <Avatar
-              size="lg"
-              showFallback={true}
-              src={avatarUrl}
-              name={_username}
-              className="h-20 w-20"
-            />
+        <CardHeader className="flex flex-col items-center justify-center pb-1">
+          <UserInfo username={_username} avatarUrl={avatarUrl} />
+          <div className="mt-2 flex gap-5">
+            <Button size="sm" className="h-7">
+              创建群组
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              onPress={() => {
+                logout();
+              }}
+              className="h-7"
+            >
+              退出登录
+            </Button>
           </div>
-          <h1
-            className="hover:text-primary cursor-pointer text-xl"
-            onClick={() => router.push("/me")}
-          >
-            {_username}
-          </h1>
         </CardHeader>
         <CardBody>
           <Tabs
@@ -72,23 +66,30 @@ function Chat() {
           >
             <Tab key="friend" title="好友" className="h-full">
               <div className="bg-content2 h-full rounded-xl">
+                <div className="flex justify-center py-2">
+                  <Button className="h-7 w-[80%]" radius="sm" color="primary">
+                    +
+                  </Button>
+                </div>
                 <FriendList userId={userId} />
               </div>
             </Tab>
             <Tab key="group" title="群组" className="h-full">
               <div className="bg-content2 h-full rounded-xl">
+                <div className="flex justify-center py-2">
+                  <Button className="h-7 w-[80%]" radius="sm" color="primary">
+                    +
+                  </Button>
+                </div>
                 <GroupList userId={userId} />
               </div>
             </Tab>
           </Tabs>
+          <_Hitokoto hitokoto={hitokoto} />
         </CardBody>
       </Card>
       {/* 右侧 */}
-      <Card className="bg-content2 w-7/9 min-w-[500px]" shadow="none" radius="none">
-        <CardHeader>
-          <h1>Chat</h1>
-        </CardHeader>
-      </Card>
+      <ChatSession activeSession={activeSession} userId={userId} />
     </div>
   );
 }

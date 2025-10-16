@@ -25,7 +25,7 @@ export default function GroupList({ userId }: GroupListProps) {
     }
   }
   return (
-    <div className="py-2">
+    <div>
       {groupList.map((group, index) => {
         if (index !== groupList.length - 1) {
           return (
