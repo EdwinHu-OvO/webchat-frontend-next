@@ -17,30 +17,31 @@ export interface MessageRowProps {
 }
 interface FetchMessagesProps {
   userId: string;
-  activeSessionId: string;
-  activeSessionType: "friend" | "group" | null;
-  activeSessionGroupId: string;
+  activeSession: {
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  };
   setMessages: (messages: MessageRowProps[]) => void;
 }
 export default async function fetchMessages({
   userId,
-  activeSessionId,
-  activeSessionType,
-  activeSessionGroupId,
+  activeSession,
   setMessages,
 }: FetchMessagesProps) {
   try {
-    if (activeSessionId === "" || activeSessionType === null) {
+    if (activeSession.id === "" || activeSession.type === null) {
       setMessages([]);
       return;
-    } else if (activeSessionType === "friend") {
+    } else if (activeSession.type === "friend") {
       const response = await fetch(
-        `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSessionId}`,
+        `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSession.id}`,
       );
       const data = await response.json();
       setMessages(data);
-    } else if (activeSessionType === "group") {
-      const response = await fetch(`${baseUrl}/api/messages/group/${activeSessionGroupId}`);
+    } else if (activeSession.type === "group") {
+      const response = await fetch(`${baseUrl}/api/messages/group/${activeSession.groupId}`);
       const data = await response.json();
       setMessages(data);
     }

@@ -96,10 +96,10 @@ export default function AddFriend({ userId, setActiveSession }: AddFriendProps) 
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                  取消
                 </Button>
                 <Button color="primary" onPress={() => handleCreateGroup(onClose)}>
-                  Action
+                  添加
                 </Button>
               </ModalFooter>
             </>

@@ -7,33 +7,34 @@ import isToday from "./_utils/isToday";
 import withinHour from "./_utils/withinHour";
 import { MessageRowProps } from "./_utils/fetchMessages";
 import fetchMessages from "./_utils/fetchMessages";
+import ControlPanel from "./_Session/ControlPanel";
 
 interface ChatSessionProps {
-  activeSessionName: string;
-  activeSessionId: string;
+  activeSession: {
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  };
+  setActiveSession: (session: {
+    id: string;
+    username: string;
+    type: "friend" | "group" | null;
+    groupId: string;
+  }) => void;
   userId: string;
-  activeSessionType: "friend" | "group" | null;
-  activeSessionGroupId: string;
 }
 
-export default function ChatSession({
-  activeSessionName,
-  activeSessionId,
-  activeSessionType,
-  activeSessionGroupId,
-  userId,
-}: ChatSessionProps) {
+export default function ChatSession({ activeSession, setActiveSession, userId }: ChatSessionProps) {
   const [messages, setMessages] = useState<MessageRowProps[]>([]);
   const [inputHeight, setInputHeight] = useState<number>(1);
   useEffect(() => {
     fetchMessages({
       userId,
-      activeSessionId,
-      activeSessionType,
-      activeSessionGroupId,
+      activeSession,
       setMessages,
     });
-  }, [activeSessionId, activeSessionType, activeSessionGroupId]);
+  }, [activeSession]);
   const messageArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (messageArea.current) {
@@ -43,14 +44,20 @@ export default function ChatSession({
   return (
     <Card className="bg-content2 relative w-7/9 min-w-[500px]" shadow="none" radius="none">
       <div className="h-full overflow-y-auto scroll-smooth" ref={messageArea}>
-        <CardHeader className="border-content3 sticky top-0 left-0 h-20 border-1 bg-[#ffffffa6] shadow-md backdrop-blur-sm">
-          <h1 className="text-2xl">{activeSessionName}</h1>
+        <CardHeader className="border-content3 sticky top-0 left-0 flex h-20 border-1 bg-[#ffffffa6] shadow-md backdrop-blur-sm">
+          <h1 className="text-2xl">{activeSession.username}</h1>
+          <ControlPanel
+            activeSession={activeSession}
+            setActiveSession={setActiveSession}
+            userId={userId}
+          />
         </CardHeader>
         <ChatMessages messages={messages} userId={userId} className="mb-20 px-5 pt-5" />
         <ChatInput
           inputHeight={inputHeight}
           setInputHeight={setInputHeight}
-          activeSessionId={activeSessionId}
+          activeSession={activeSession}
+          userId={userId}
         />
       </div>
     </Card>

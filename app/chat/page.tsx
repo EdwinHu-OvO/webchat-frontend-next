@@ -114,11 +114,9 @@ export default function Chat() {
         </Card>
         {/* 右侧 */}
         <ChatSession
-          activeSessionName={activeSession.username}
-          activeSessionId={activeSession.id}
+          activeSession={activeSession}
+          setActiveSession={setActiveSession}
           userId={userId}
-          activeSessionType={activeSession.type}
-          activeSessionGroupId={activeSession.groupId}
         />
       </div>
     </>

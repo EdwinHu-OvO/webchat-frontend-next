@@ -85,10 +85,10 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                  取消
                 </Button>
                 <Button color="primary" onPress={() => handleCreateGroup(onClose)}>
-                  Action
+                  创建
                 </Button>
               </ModalFooter>
             </>

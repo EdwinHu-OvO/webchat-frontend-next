@@ -79,6 +79,10 @@ export default function GroupList({ userId, setActiveSession, activeSession }: G
           <User
             description={`GroupId:${group.id}`}
             name={group.name}
+            avatarProps={{
+              src: "",
+              name: group.name,
+            }}
             className={cn(
               "flex w-full justify-start rounded-xl p-3",
               selectedListItem === group.id && "bg-[#e5eef5cc]",
