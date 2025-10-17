@@ -15,6 +15,7 @@ import CreateGroup from "./CreateGroup";
 import { Button } from "@heroui/button";
 import { ToastProvider } from "@heroui/toast";
 import { ScrollShadow } from "@heroui/scroll-shadow";
+import AddFriend from "./AddFriend";
 
 export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
@@ -72,7 +73,7 @@ export default function Chat() {
           <CardBody>
             <Tabs
               classNames={{
-                tabList: "w-full relative rounded-lg p-0",
+                tabList: "w-full rounded-lg p-0",
                 cursor: "w-full bg-primary",
                 tabContent: "group-data-[selected=true]:text-content1 text-[#3e3e3e]",
               }}
@@ -81,11 +82,7 @@ export default function Chat() {
             >
               <Tab key="friend" title="好友" className="h-full">
                 <div className="bg-content2 rounded-xl">
-                  <div className="flex justify-center py-2">
-                    <Button className="h-7 w-[80%]" radius="sm" color="primary">
-                      +
-                    </Button>
-                  </div>
+                  <AddFriend userId={userId} setActiveSession={setActiveSession} />
                   <ScrollShadow className="h-[calc(51.1vh+1px)]">
                     <FriendList
                       userId={userId}

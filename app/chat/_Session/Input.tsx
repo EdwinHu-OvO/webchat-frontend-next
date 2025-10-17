@@ -33,6 +33,7 @@ export default function ChatInput({
         color={activeSessionId === "" ? "default" : "primary"}
         size="sm"
         disabled={activeSessionId === "" ? true : false}
+        className="h-[2.5rem]"
       >
         发送
       </Button>
