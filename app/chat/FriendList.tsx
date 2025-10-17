@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
@@ -36,6 +36,7 @@ export default function FriendList({ userId, setActiveSession, activeSession }: 
   }, [userId]);
   useEffect(() => {
     if (activeSession.type === "friend") {
+      fetchFriendList();
       setSelectedListItem(activeSession.id);
     }
   }, [activeSession]);
@@ -61,10 +62,10 @@ export default function FriendList({ userId, setActiveSession, activeSession }: 
             name={friend.friend.username}
             className={cn(
               "flex w-full justify-start rounded-xl p-3",
-              selectedListItem === friend.id && "bg-[#e5eef5cc]",
+              selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
             )}
             onClick={() => {
-              setSelectedListItem(friend.id);
+              setSelectedListItem(friend.friend.id);
               setActiveSession({
                 id: friend.friend.id,
                 username: friend.friend.username,
@@ -88,10 +89,10 @@ export default function FriendList({ userId, setActiveSession, activeSession }: 
             name={friend.friend.username}
             className={cn(
               "flex w-full justify-start rounded-xl p-3",
-              selectedListItem === friend.id && "bg-[#e5eef5cc]",
+              selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
             )}
             onClick={() => {
-              setSelectedListItem(friend.id);
+              setSelectedListItem(friend.friend.id);
               setActiveSession({
                 id: friend.friend.id,
                 username: friend.friend.username,

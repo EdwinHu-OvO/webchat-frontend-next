@@ -52,7 +52,7 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
       onClose();
       setActiveSession({
         id: "",
-        username: "",
+        username: data.name,
         type: "group",
         groupId: data.id,
       });

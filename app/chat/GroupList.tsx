@@ -32,8 +32,8 @@ export default function GroupList({ userId, setActiveSession, activeSession }: G
   }, [userId]);
   useEffect(() => {
     if (activeSession.type === "group") {
-      setSelectedListItem(activeSession.groupId);
       fetchGroupList();
+      setSelectedListItem(activeSession.groupId);
     }
   }, [activeSession]);
   async function fetchGroupList() {
