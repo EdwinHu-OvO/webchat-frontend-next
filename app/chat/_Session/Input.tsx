@@ -16,7 +16,8 @@ export default function ChatInput({
   return (
     <div className="border-content3 absolute bottom-0 left-0 flex w-full items-start justify-start gap-2 border-1 bg-[#ffffffa6] p-3 shadow-md backdrop-blur-sm duration-800">
       <Textarea
-        placeholder="输入消息(按Ctrl+Enter发送)"
+        placeholder={activeSessionId === "" ? "请选择会话" : "输入消息(按Ctrl+Enter发送)"}
+        disabled={activeSessionId === "" ? true : false}
         minRows={inputHeight}
         maxRows={10}
         className="ease-in-out"

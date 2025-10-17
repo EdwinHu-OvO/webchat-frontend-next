@@ -11,7 +11,10 @@ import GroupList from "./GroupList";
 import { Tabs, Tab } from "@heroui/tabs";
 import ChatSession from "./ChatSession";
 import UserInfo from "./UserInfo";
+import CreateGroup from "./CreateGroup";
 import { Button } from "@heroui/button";
+import { ToastProvider } from "@heroui/toast";
+import { ScrollShadow } from "@heroui/scroll-shadow";
 
 export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
@@ -43,69 +46,84 @@ export default function Chat() {
     router.push("/login");
   }
   return (
-    <div className="flex h-screen w-screen">
-      {/* 左侧 */}
-      <Card className="w-2/9 min-w-xs" shadow="none" radius="none">
-        <CardHeader className="flex flex-col items-center justify-center pb-1">
-          <UserInfo username={_username} avatarUrl={avatarUrl} />
-          <div className="mt-2 flex gap-5">
-            <Button size="sm" className="h-7">
-              创建群组
-            </Button>
-            <Button
-              color="danger"
-              size="sm"
-              onPress={() => {
-                logout();
+    <>
+      <div className="fixed z-[100]">
+        <ToastProvider placement={"top-center"} toastOffset={30} />
+      </div>
+      <div className="flex h-screen w-screen">
+        {/* 左侧 */}
+        <Card className="w-2/9 min-w-xs" shadow="none" radius="none">
+          <CardHeader className="flex flex-col items-center justify-center pb-1">
+            <UserInfo username={_username} avatarUrl={avatarUrl} />
+            <div className="mt-2 flex gap-5">
+              <CreateGroup userId={userId} setActiveSession={setActiveSession} />
+              <Button
+                color="danger"
+                size="sm"
+                onPress={() => {
+                  logout();
+                }}
+                className="h-7"
+              >
+                退出登录
+              </Button>
+            </div>
+          </CardHeader>
+          <CardBody>
+            <Tabs
+              classNames={{
+                tabList: "w-full relative rounded-lg p-0",
+                cursor: "w-full bg-primary",
+                tabContent: "group-data-[selected=true]:text-content1 text-[#3e3e3e]",
               }}
-              className="h-7"
+              className="justify-center px-1"
+              color="primary"
             >
-              退出登录
-            </Button>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <Tabs
-            classNames={{
-              tabList: "w-full relative rounded-lg p-0",
-              cursor: "w-full bg-primary",
-              tabContent: "group-data-[selected=true]:text-content1 text-[#3e3e3e]",
-            }}
-            className="justify-center px-1"
-            color="primary"
-          >
-            <Tab key="friend" title="好友" className="h-full">
-              <div className="bg-content2 h-full rounded-xl">
-                <div className="flex justify-center py-2">
-                  <Button className="h-7 w-[80%]" radius="sm" color="primary">
-                    +
-                  </Button>
+              <Tab key="friend" title="好友" className="h-full">
+                <div className="bg-content2 rounded-xl">
+                  <div className="flex justify-center py-2">
+                    <Button className="h-7 w-[80%]" radius="sm" color="primary">
+                      +
+                    </Button>
+                  </div>
+                  <ScrollShadow className="h-[calc(51.1vh+1px)]">
+                    <FriendList
+                      userId={userId}
+                      setActiveSession={setActiveSession}
+                      activeSession={activeSession}
+                    />
+                  </ScrollShadow>
                 </div>
-                <FriendList userId={userId} setActiveSession={setActiveSession} />
-              </div>
-            </Tab>
-            <Tab key="group" title="群组" className="h-full">
-              <div className="bg-content2 h-full rounded-xl">
-                <div className="flex justify-center py-2">
-                  <Button className="h-7 w-[80%]" radius="sm" color="primary">
-                    +
-                  </Button>
+              </Tab>
+              <Tab key="group" title="群组">
+                <div className="bg-content2 rounded-xl">
+                  <div className="flex justify-center py-2">
+                    <Button className="h-7 w-[80%]" radius="sm" color="primary">
+                      +
+                    </Button>
+                  </div>
+                  <ScrollShadow className="h-[calc(51.1vh+1px)]">
+                    <GroupList
+                      userId={userId}
+                      setActiveSession={setActiveSession}
+                      activeSession={activeSession}
+                    />
+                  </ScrollShadow>
                 </div>
-                <GroupList userId={userId} setActiveSession={setActiveSession} />
-              </div>
-            </Tab>
-          </Tabs>
-          <_Hitokoto hitokoto={hitokoto} />
-        </CardBody>
-      </Card>
-      {/* 右侧 */}
-      <ChatSession
-        activeSessionName={activeSession.username}
-        activeSessionId={activeSession.id}
-        userId={userId}
-        activeSessionType={activeSession.type}
-        activeSessionGroupId={activeSession.groupId}
-      />
-    </div>
+              </Tab>
+            </Tabs>
+            <_Hitokoto hitokoto={hitokoto} />
+          </CardBody>
+        </Card>
+        {/* 右侧 */}
+        <ChatSession
+          activeSessionName={activeSession.username}
+          activeSessionId={activeSession.id}
+          userId={userId}
+          activeSessionType={activeSession.type}
+          activeSessionGroupId={activeSession.groupId}
+        />
+      </div>
+    </>
   );
 }
