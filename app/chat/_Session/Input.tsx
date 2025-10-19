@@ -30,7 +30,6 @@ export default function ChatInput({
 }: ChatInputProps) {
   const [message, setMessage] = useState<string>("");
   const handleSend = () => {
-    console.log(socket);
     if (!socket || !socket.connected) {
       showTost({
         title: "消息发送",
@@ -51,13 +50,15 @@ export default function ChatInput({
       try {
         socket.emit("private_message", payload, (ack?: { ok?: boolean; error?: string }) => {
           if (ack && ack.ok) {
-            setMessage("");
-            fetchMessages({ userId, activeSession, setMessages });
           } else if (ack && ack.error) {
             showTost({ title: "消息发送", description: ack.error, color: "danger" });
           }
         });
-        setTimeout(() => fetchMessages({ userId, activeSession, setMessages }), 300);
+        setTimeout(() => {
+          fetchMessages({ userId, activeSession, setMessages });
+          setMessage("");
+          setInputHeight(1);
+        }, 300);
       } catch (e) {
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });
       }
@@ -70,13 +71,15 @@ export default function ChatInput({
       try {
         socket.emit("group_message", payload, (ack?: { ok?: boolean; error?: string }) => {
           if (ack && ack.ok) {
-            setMessage("");
-            fetchMessages({ userId, activeSession, setMessages });
           } else if (ack && ack.error) {
             showTost({ title: "消息发送", description: ack.error, color: "danger" });
           }
         });
-        setTimeout(() => fetchMessages({ userId, activeSession, setMessages }), 300);
+        setTimeout(() => {
+          fetchMessages({ userId, activeSession, setMessages });
+          setMessage("");
+          setInputHeight(1);
+        }, 300);
       } catch (e) {
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });
       }
@@ -95,18 +98,23 @@ export default function ChatInput({
         onFocus={() => {
           setInputHeight(3);
         }}
-        onBlur={() => {
-          setInputHeight(1);
-        }}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && e.ctrlKey) {
+            handleSend();
+            setInputHeight(1);
+          }
+        }}
       />
       <Button
         color={activeSession.id === "" ? "default" : "primary"}
         size="sm"
         disabled={activeSession.id === "" ? true : false}
         className="h-[2.5rem]"
-        onPress={handleSend}
+        onPress={() => {
+          handleSend();
+        }}
       >
         发送
       </Button>

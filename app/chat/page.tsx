@@ -90,7 +90,6 @@ export default function Chat() {
     setSocket(null);
     router.push("/login");
   }
-  console.log(socket);
   return (
     <>
       <div className="fixed z-[100]">
