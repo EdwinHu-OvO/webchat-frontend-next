@@ -1,6 +1,7 @@
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@heroui/react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import showTost from "@/app/_helper/showToast";
+import { useEffect, useState } from "react";
 
 interface ControlPanelProps {
   activeSession: {
@@ -53,6 +54,23 @@ export default function ControlPanel({
       console.error(error);
     }
   }
+  async function isOwner(userId: string, groupId: string) {
+    // 后端没有提供相应的接口，群成员列表的第一个就是群主
+    // 查询群成员列表
+    const response = await fetch(`${baseUrl}/api/groups/${groupId}/members`);
+    const data = await response.json();
+    // 判断第一个成员是否是当前用户
+    return data[0].id === userId;
+  }
+  const [isOwnerFlag, setIsOwnerFlag] = useState<boolean>(false);
+  useEffect(() => {
+    (async () => {
+      if (activeSession.type === "group") {
+        const isOwnerFlag = await isOwner(userId, activeSession.groupId);
+        setIsOwnerFlag(isOwnerFlag);
+      }
+    })();
+  }, [activeSession]);
   return (
     <span className="ml-auto flex items-end gap-2">
       {activeSession.type === "friend" && (
@@ -84,12 +102,15 @@ export default function ControlPanel({
           <Button color="default" size="md">
             邀请成员
           </Button>
-          <Button color="danger" size="md" variant="light">
-            退出群组
-          </Button>
-          <Button color="danger" size="md" variant="light">
-            解散群组
-          </Button>
+          {isOwnerFlag ? (
+            <Button color="danger" size="md" variant="light">
+              解散群组
+            </Button>
+          ) : (
+            <Button color="danger" size="md" variant="light">
+              退出群组
+            </Button>
+          )}
         </>
       )}
     </span>

@@ -8,6 +8,7 @@ import withinHour from "./_utils/withinHour";
 import { MessageRowProps } from "./_utils/fetchMessages";
 import fetchMessages from "./_utils/fetchMessages";
 import ControlPanel from "./_Session/ControlPanel";
+import type { ChatSocket } from "./_types/ChatSocket";
 
 interface ChatSessionProps {
   activeSession: {
@@ -23,9 +24,15 @@ interface ChatSessionProps {
     groupId: string;
   }) => void;
   userId: string;
+  socket: ChatSocket | null;
 }
 
-export default function ChatSession({ activeSession, setActiveSession, userId }: ChatSessionProps) {
+export default function ChatSession({
+  activeSession,
+  setActiveSession,
+  userId,
+  socket,
+}: ChatSessionProps) {
   const [messages, setMessages] = useState<MessageRowProps[]>([]);
   const [inputHeight, setInputHeight] = useState<number>(1);
   useEffect(() => {
@@ -41,6 +48,7 @@ export default function ChatSession({ activeSession, setActiveSession, userId }:
       messageArea.current.scrollTop = messageArea.current.scrollHeight;
     }
   }, [messages]);
+
   return (
     <Card className="bg-content2 relative w-7/9 min-w-[500px]" shadow="none" radius="none">
       <div className="h-full overflow-y-auto scroll-smooth" ref={messageArea}>
@@ -54,6 +62,8 @@ export default function ChatSession({ activeSession, setActiveSession, userId }:
         </CardHeader>
         <ChatMessages messages={messages} userId={userId} className="mb-20 px-5 pt-5" />
         <ChatInput
+          setMessages={setMessages}
+          socket={socket}
           inputHeight={inputHeight}
           setInputHeight={setInputHeight}
           activeSession={activeSession}

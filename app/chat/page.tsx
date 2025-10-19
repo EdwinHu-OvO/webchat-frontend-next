@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { useLoginState } from "../_utils/storeuser";
 import Hitokoto from "@/components/hitokoto";
 import { useState, useEffect } from "react";
@@ -16,10 +16,16 @@ import { Button } from "@heroui/button";
 import { ToastProvider } from "@heroui/toast";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import AddFriend from "./AddFriend";
+import JoinGroup from "./JoinGroup";
+import io from "socket.io-client";
+import type { ChatSocket } from "./_types/ChatSocket";
+import { socketUrl } from "@/app/_utils/baseurl";
 
 export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
+  const router = useRouter();
+  const [socket, setSocket] = useState<ChatSocket | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [activeSession, setActiveSession] = useState<{
     id: string;
@@ -32,11 +38,47 @@ export default function Chat() {
     type: null,
     groupId: "",
   });
-  const router = useRouter();
   useEffect(() => {
     set_Username(username);
     fetchAvatar({ username: username, setAvatarUrl });
-  }, [username]);
+
+    const newSocket = io(socketUrl, {
+      transports: ["websocket"],
+      query: { userId: String(userId) },
+    });
+
+    const handleConnect = () => {
+      setSocket(newSocket as unknown as ChatSocket);
+    };
+
+    const handleConnectError = (err: unknown) => {
+      console.error("[socket] connect_error", err);
+    };
+
+    const handleDisconnect = (reason: unknown) => {
+      console.warn("[socket] disconnected", reason);
+      setSocket((prev: ChatSocket | null) =>
+        prev === (newSocket as unknown as ChatSocket) ? null : prev,
+      );
+    };
+
+    (newSocket as any).on("connect", handleConnect);
+    (newSocket as any).on("connect_error", handleConnectError);
+    (newSocket as any).on("disconnect", handleDisconnect);
+
+    if ((newSocket as any).connected) {
+      handleConnect();
+    }
+
+    return () => {
+      (newSocket as any).off("connect", handleConnect);
+      (newSocket as any).off("connect_error", handleConnectError);
+      (newSocket as any).off("disconnect", handleDisconnect);
+      try {
+        (newSocket as any).close();
+      } catch {}
+    };
+  }, [username, userId]);
   const hitokoto = Hitokoto({
     type: ["c", "d", "f", "h", "i", "j", "k"],
     max_length: 13,
@@ -44,8 +86,11 @@ export default function Chat() {
   });
   function logout() {
     localStorage.removeItem("webchat-login");
+    socket?.disconnect?.();
+    setSocket(null);
     router.push("/login");
   }
+  console.log(socket);
   return (
     <>
       <div className="fixed z-[100]">
@@ -80,10 +125,10 @@ export default function Chat() {
               className="justify-center px-1"
               color="primary"
             >
-              <Tab key="friend" title="好友" className="h-full">
+              <Tab key="friend" title="好友" className="pb-0">
                 <div className="bg-content2 rounded-xl">
                   <AddFriend userId={userId} setActiveSession={setActiveSession} />
-                  <ScrollShadow className="h-[calc(51.1vh+1px)]">
+                  <ScrollShadow className="h-[calc(50.5vh)]">
                     <FriendList
                       userId={userId}
                       setActiveSession={setActiveSession}
@@ -92,14 +137,10 @@ export default function Chat() {
                   </ScrollShadow>
                 </div>
               </Tab>
-              <Tab key="group" title="群组">
+              <Tab key="group" title="群组" className="pb-0">
                 <div className="bg-content2 rounded-xl">
-                  <div className="flex justify-center py-2">
-                    <Button className="h-7 w-[80%]" radius="sm" color="primary">
-                      +
-                    </Button>
-                  </div>
-                  <ScrollShadow className="h-[calc(51.1vh+1px)]">
+                  <JoinGroup userId={userId} setActiveSession={setActiveSession} />
+                  <ScrollShadow className="h-[calc(50.5vh)]">
                     <GroupList
                       userId={userId}
                       setActiveSession={setActiveSession}
@@ -109,11 +150,14 @@ export default function Chat() {
                 </div>
               </Tab>
             </Tabs>
-            <_Hitokoto hitokoto={hitokoto} />
           </CardBody>
+          <CardFooter className="pt-0">
+            <_Hitokoto hitokoto={hitokoto} />
+          </CardFooter>
         </Card>
         {/* 右侧 */}
         <ChatSession
+          socket={socket}
           activeSession={activeSession}
           setActiveSession={setActiveSession}
           userId={userId}
