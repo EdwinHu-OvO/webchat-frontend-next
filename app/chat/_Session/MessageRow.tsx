@@ -1,6 +1,7 @@
 import { Avatar } from "@heroui/avatar";
 import { useState, useEffect } from "react";
 import fetchAvatar from "@/app/_helper/fetchAvatar";
+import { log } from "console";
 interface MessageRowProps {
   id: number;
   sender: {
@@ -47,7 +48,9 @@ export default function MessageRow({
             <h2 className="mr-11 text-sm">{sender.username}</h2>
             {/* bubble */}
             <div className="flex flex-row gap-2">
-              <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
+              <p
+                className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2 whitespace-pre-wrap`}
+              >
                 {content}
               </p>
               <Avatar size="sm" name={sender.username} src={avatarUrl} />
@@ -73,7 +76,9 @@ export default function MessageRow({
             {/* bubble */}
             <div className="flex flex-row gap-2">
               <Avatar size="sm" name={sender.username} src={avatarUrl} />
-              <p className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2`}>
+              <p
+                className={`${isSelf ? "bg-primary" : "bg-content1"} h-fit w-fit rounded-lg p-2 whitespace-pre-wrap`}
+              >
                 {content}
               </p>
             </div>

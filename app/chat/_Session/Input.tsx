@@ -57,7 +57,6 @@ export default function ChatInput({
         setTimeout(() => {
           fetchMessages({ userId, activeSession, setMessages });
           setMessage("");
-          setInputHeight(1);
         }, 300);
       } catch (e) {
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });
@@ -78,7 +77,6 @@ export default function ChatInput({
         setTimeout(() => {
           fetchMessages({ userId, activeSession, setMessages });
           setMessage("");
-          setInputHeight(1);
         }, 300);
       } catch (e) {
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });

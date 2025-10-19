@@ -25,6 +25,23 @@ export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
   const router = useRouter();
+  const [hasHydrated, setHasHydrated] = useState<boolean>(false);
+  // 监听 zustand 持久化水合完成
+  useEffect(() => {
+    const persistApi = (useLoginState as any)?.persist;
+    const unsub = persistApi?.onFinishHydration?.(() => setHasHydrated(true));
+    setHasHydrated(persistApi?.hasHydrated?.() ?? false);
+    return () => {
+      unsub?.();
+    };
+  }, []);
+  // 路由跳转需放入副作用，避免在渲染期间更新 Router
+  useEffect(() => {
+    if (!hasHydrated) return;
+    if (!username) {
+      router.replace("/login");
+    }
+  }, [hasHydrated, username, router]);
   const [socket, setSocket] = useState<ChatSocket | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [activeSession, setActiveSession] = useState<{
@@ -39,6 +56,8 @@ export default function Chat() {
     groupId: "",
   });
   useEffect(() => {
+    if (!hasHydrated) return;
+    if (!username || !userId) return;
     set_Username(username);
     fetchAvatar({ username: username, setAvatarUrl });
 
@@ -78,7 +97,7 @@ export default function Chat() {
         (newSocket as any).close();
       } catch {}
     };
-  }, [username, userId]);
+  }, [hasHydrated, username, userId]);
   const hitokoto = Hitokoto({
     type: ["c", "d", "f", "h", "i", "j", "k"],
     max_length: 13,
