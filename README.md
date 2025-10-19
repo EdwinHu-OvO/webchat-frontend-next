@@ -2,4 +2,4 @@
 
 ## tech stack(under developing):
 
-next.js + react + zustand + tailwind + heroui
+next.js + react + zustand + tailwind + heroui + socket.io
