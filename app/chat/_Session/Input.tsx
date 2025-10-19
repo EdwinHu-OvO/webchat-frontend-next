@@ -98,6 +98,14 @@ export default function ChatInput({
         onFocus={() => {
           setInputHeight(3);
         }}
+        onBlur={() => {
+          // 延迟收缩，避免点击发送按钮时布局立即变化导致首次点击失效
+          setTimeout(() => {
+            if (document.activeElement !== textareaRef.current) {
+              setInputHeight(1);
+            }
+          }, 100);
+        }}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => {
