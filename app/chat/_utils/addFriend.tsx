@@ -34,6 +34,7 @@ export default async function handleAddFriend({
       description: "好友用户不存在",
       color: "danger",
     });
+    setFriendUsername("");
     return;
   }
   try {

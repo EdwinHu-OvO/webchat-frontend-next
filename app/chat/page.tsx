@@ -106,7 +106,6 @@ export default function Chat() {
       }
     };
     const handleGroupMessage = (data: { senderId: number; groupId: number; content: string }) => {
-      console.log(data);
       const current = activeSessionRef.current;
       if (current.type !== "group") return;
       if (data.groupId === Number(current.groupId) && data.senderId !== Number(userId)) {

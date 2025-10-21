@@ -46,10 +46,15 @@ export default function ControlPanel({
     })();
   }, [activeSession, userId]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
+    onClose: onDeleteClose,
+  } = useDisclosure();
   const [username, setUsername] = useState<string>("");
   return (
     <span className="ml-auto flex items-end gap-2">
-      {activeSession.type === "group" && (
+      {activeSession.type === "group" && activeSession.groupId !== "" && (
         <>
           <Button
             color="default"
@@ -91,13 +96,26 @@ export default function ControlPanel({
           </Modal>
         </>
       )}
-      <Popover showArrow={true} placement="left-start">
+      <Popover
+        showArrow={true}
+        placement="left-start"
+        isOpen={isDeleteOpen}
+        onOpenChange={onDeleteOpenChange}
+      >
         <PopoverTrigger>
-          <Button color="danger" size="md" variant="light">
-            {activeSession.type === "friend" && "删除好友"}
-            {activeSession.type === "group" && isOwnerFlag && "解散群组"}
-            {activeSession.type === "group" && !isOwnerFlag && "退出群组"}
-          </Button>
+          {activeSession.id && (
+            <Button color="danger" size="md" variant="light">
+              {activeSession.type === "friend" && "删除好友"}
+              {activeSession.type === "group" &&
+                activeSession.groupId !== "" &&
+                isOwnerFlag &&
+                "解散群组"}
+              {activeSession.type === "group" &&
+                activeSession.groupId !== "" &&
+                !isOwnerFlag &&
+                "退出群组"}
+            </Button>
+          )}
         </PopoverTrigger>
         <PopoverContent className="flex w-50 items-start p-4">
           <p className="mb-3">
@@ -112,6 +130,7 @@ export default function ControlPanel({
               variant="solid"
               onPress={() => {
                 handleDelete({ activeSession, userId, isOwnerFlag, setActiveSession });
+                onDeleteClose();
               }}
             >
               确定

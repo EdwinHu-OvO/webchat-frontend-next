@@ -38,7 +38,15 @@ export default function ChatInput({
       });
       return;
     }
-    if (message.trim() === "") return;
+    if (message.trim() === "") {
+      showTost({
+        title: "消息发送",
+        description: "消息不能为空",
+        color: "danger",
+      });
+      setMessage("");
+      return;
+    }
 
     const content = message;
     if (activeSession.type === "friend") {

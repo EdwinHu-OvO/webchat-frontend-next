@@ -24,6 +24,7 @@ export default async function handleInviteMember({
       description: "用户不存在",
       color: "danger",
     });
+    setUsername("");
     return;
   }
   const response = await fetch(`/api/groups/${activeSession.groupId}/members/${targetUserId}`, {

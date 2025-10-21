@@ -79,7 +79,7 @@ export default function FriendList({
             });
           }}
         />
-        {index !== friendList.length - 1 && <Divider className="w-[95%]" />}
+        {index !== friendList.length - 1 && <Divider className="w-[90%]" />}
       </div>
     );
   });

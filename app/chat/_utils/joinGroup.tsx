@@ -36,7 +36,13 @@ export default async function handleJoinGroup({
       },
     });
     if (!response.ok) {
-      throw new Error("加入群组失败");
+      showTost({
+        title: "加入群组",
+        description: "加入群组失败",
+        color: "danger",
+      });
+      setGroupCode("");
+      return;
     }
     setGroupCode("");
     showTost({

@@ -55,6 +55,7 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
         description: "创建群组失败",
         color: "danger",
       });
+      setGroupName("");
     }
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

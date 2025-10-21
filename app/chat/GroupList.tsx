@@ -76,7 +76,7 @@ export default function GroupList({
             });
           }}
         />
-        {index !== groupList.length - 1 && <Divider className="w-[95%]" />}
+        {index !== groupList.length - 1 && <Divider className="w-[90%]" />}
       </div>
     );
   });
