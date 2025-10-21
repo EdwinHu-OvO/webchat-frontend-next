@@ -70,7 +70,7 @@ export default function ControlPanel({
         setIsOwnerFlag(isOwnerFlag);
       }
     })();
-  }, [activeSession]);
+  }, [activeSession, userId]);
   return (
     <span className="ml-auto flex items-end gap-2">
       {activeSession.type === "friend" && (

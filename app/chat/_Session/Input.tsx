@@ -59,6 +59,7 @@ export default function ChatInput({
           setMessage("");
         }, 300);
       } catch (e) {
+        console.error(e);
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });
       }
     } else if (activeSession.type === "group") {
@@ -79,6 +80,7 @@ export default function ChatInput({
           setMessage("");
         }, 300);
       } catch (e) {
+        console.error(e);
         showTost({ title: "消息发送", description: "发送失败", color: "danger" });
       }
     }

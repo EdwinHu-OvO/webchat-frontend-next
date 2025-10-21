@@ -9,6 +9,7 @@ import { MessageRowProps } from "./_utils/fetchMessages";
 import fetchMessages from "./_utils/fetchMessages";
 import ControlPanel from "./_Session/ControlPanel";
 import type { ChatSocket } from "./_types/ChatSocket";
+import { log } from "console";
 
 interface ChatSessionProps {
   activeSession: {
@@ -41,14 +42,27 @@ export default function ChatSession({
       activeSession,
       setMessages,
     });
-  }, [activeSession]);
+  }, [activeSession, userId]);
   const messageArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (messageArea.current) {
       messageArea.current.scrollTop = messageArea.current.scrollHeight;
     }
   }, [messages]);
-
+  socket?.on("group_message", (data) => {});
+  socket?.on(
+    "private_message",
+    (data: { senderId: number; receiverId: number; content: string }) => {
+      if (activeSession.type !== "friend") return;
+      if (data.receiverId === Number(userId) && data.senderId === Number(activeSession.id)) {
+        fetchMessages({
+          userId,
+          activeSession,
+          setMessages,
+        });
+      }
+    },
+  );
   return (
     <Card className="bg-content2 relative w-7/9 min-w-[500px]" shadow="none" radius="none">
       <div className="h-full overflow-y-auto scroll-smooth" ref={messageArea}>

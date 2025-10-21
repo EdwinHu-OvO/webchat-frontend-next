@@ -1,18 +1,16 @@
 import { Avatar } from "@heroui/avatar";
 import { useState, useEffect } from "react";
 import fetchAvatar from "@/app/_helper/fetchAvatar";
-import { log } from "console";
+
 interface MessageRowProps {
   id: number;
   sender: {
     id: string;
     username: string;
-    password: string;
   };
   receiver: {
     id: string;
     username: string;
-    password: string;
   };
   content: string;
   createdAt: string;

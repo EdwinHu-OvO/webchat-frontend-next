@@ -28,7 +28,7 @@ export default function Chat() {
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);
   // 监听 zustand 持久化水合完成
   useEffect(() => {
-    const persistApi = (useLoginState as any)?.persist;
+    const persistApi = useLoginState?.persist;
     const unsub = persistApi?.onFinishHydration?.(() => setHasHydrated(true));
     setHasHydrated(persistApi?.hasHydrated?.() ?? false);
     return () => {
@@ -81,20 +81,20 @@ export default function Chat() {
       );
     };
 
-    (newSocket as any).on("connect", handleConnect);
-    (newSocket as any).on("connect_error", handleConnectError);
-    (newSocket as any).on("disconnect", handleDisconnect);
+    (newSocket as unknown as ChatSocket).on("connect", handleConnect);
+    (newSocket as unknown as ChatSocket).on("connect_error", handleConnectError);
+    (newSocket as unknown as ChatSocket).on("disconnect", handleDisconnect);
 
-    if ((newSocket as any).connected) {
+    if ((newSocket as unknown as ChatSocket).connected) {
       handleConnect();
     }
 
     return () => {
-      (newSocket as any).off("connect", handleConnect);
-      (newSocket as any).off("connect_error", handleConnectError);
-      (newSocket as any).off("disconnect", handleDisconnect);
+      (newSocket as unknown as ChatSocket).off("connect", handleConnect);
+      (newSocket as unknown as ChatSocket).off("connect_error", handleConnectError);
+      (newSocket as unknown as ChatSocket).off("disconnect", handleDisconnect);
       try {
-        (newSocket as any).close();
+        (newSocket as unknown as ChatSocket).close();
       } catch {}
     };
   }, [hasHydrated, username, userId]);
@@ -140,10 +140,10 @@ export default function Chat() {
                 cursor: "w-full bg-primary",
                 tabContent: "group-data-[selected=true]:text-content1 text-[#3e3e3e]",
               }}
-              className="justify-center px-1"
+              className="justify-center px-1 pb-3"
               color="primary"
             >
-              <Tab key="friend" title="好友" className="pb-0">
+              <Tab key="friend" title="好友" className="p-0">
                 <div className="bg-content2 rounded-xl">
                   <AddFriend userId={userId} setActiveSession={setActiveSession} />
                   <ScrollShadow className="h-[calc(50.5vh)]">
@@ -155,7 +155,7 @@ export default function Chat() {
                   </ScrollShadow>
                 </div>
               </Tab>
-              <Tab key="group" title="群组" className="pb-0">
+              <Tab key="group" title="群组" className="p-0">
                 <div className="bg-content2 rounded-xl">
                   <JoinGroup userId={userId} setActiveSession={setActiveSession} />
                   <ScrollShadow className="h-[calc(50.5vh)]">

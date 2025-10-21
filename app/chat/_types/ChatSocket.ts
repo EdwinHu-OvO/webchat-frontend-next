@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // 轻量本地类型，兼容 socket.io-client v2 的常用接口
 export type ChatSocket = {
   id?: string;

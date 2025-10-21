@@ -2,14 +2,12 @@ import { baseUrl } from "@/app/_utils/baseurl";
 export interface MessageRowProps {
   id: number;
   sender: {
-    id: string;
     username: string;
-    password: string;
+    id: string;
   };
   receiver: {
-    id: string;
     username: string;
-    password: string;
+    id: string;
   };
   group: null;
   content: string;

@@ -1,7 +1,5 @@
 "use client";
 import { useLoginState } from "../_utils/storeuser";
-import { useEffect } from "react";
-import Hitokoto from "@/components/hitokoto";
 
 export default function Me() {
   const { username, setLoginUsername } = useLoginState();
