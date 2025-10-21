@@ -1,7 +1,20 @@
-import { Popover, PopoverTrigger, PopoverContent, Button } from "@heroui/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Button,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+} from "@heroui/react";
 import { useEffect, useState } from "react";
 import isOwner from "../_utils/isOwner";
 import handleDelete from "./handleDelete";
+import handleInviteMember from "./handleInviteMember";
 
 interface ControlPanelProps {
   activeSession: {
@@ -32,18 +45,51 @@ export default function ControlPanel({
       }
     })();
   }, [activeSession, userId]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [username, setUsername] = useState<string>("");
   return (
     <span className="ml-auto flex items-end gap-2">
       {activeSession.type === "group" && (
-        <Button
-          color="default"
-          size="md"
-          onPress={() => {
-            // handleInviteMember({ activeSession, userId, setActiveSession });
-          }}
-        >
-          邀请成员
-        </Button>
+        <>
+          <Button
+            color="default"
+            size="md"
+            onPress={() => {
+              onOpen();
+            }}
+          >
+            邀请成员
+          </Button>
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} backdrop="blur">
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className="flex flex-col gap-1">邀请成员</ModalHeader>
+                  <ModalBody>
+                    <Input
+                      label="用户名"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="danger" variant="light" onPress={onClose}>
+                      取消
+                    </Button>
+                    <Button
+                      color="primary"
+                      onPress={() =>
+                        handleInviteMember({ username, onClose, activeSession, setUsername })
+                      }
+                    >
+                      邀请
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
       )}
       <Popover showArrow={true} placement="left-start">
         <PopoverTrigger>

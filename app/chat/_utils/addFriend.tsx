@@ -1,4 +1,5 @@
 import showTost from "@/app/_helper/showToast";
+import getIdByName from "./getIdByName";
 interface AddFriendProps {
   friendUsername: string;
   userId: string;
@@ -26,9 +27,8 @@ export default async function handleAddFriend({
     });
     return;
   }
-  const targetUserId = await fetch(`/api/users/search?username=${friendUsername}`);
-  const targetUserIdData = await targetUserId.json();
-  if (targetUserIdData === null) {
+  const targetUserId = await getIdByName(friendUsername);
+  if (targetUserId === null) {
     showTost({
       title: "添加好友",
       description: "好友用户不存在",
@@ -39,7 +39,7 @@ export default async function handleAddFriend({
   try {
     const response = await fetch(`/api/friends`, {
       method: "POST",
-      body: JSON.stringify({ userId: userId, friendId: targetUserIdData.id }),
+      body: JSON.stringify({ userId: userId, friendId: targetUserId }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -55,8 +55,8 @@ export default async function handleAddFriend({
     });
     onClose();
     setActiveSession({
-      id: targetUserIdData.id,
-      username: targetUserIdData.username,
+      id: targetUserId,
+      username: friendUsername,
       type: "friend",
       groupId: "",
     });
