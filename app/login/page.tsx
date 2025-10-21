@@ -8,7 +8,6 @@ import { Form } from "@heroui/form";
 import LoginButton from "./Loginbutton";
 import { ToastProvider } from "@heroui/toast";
 import { useStoreUser } from "../_utils/storeuser";
-import { baseUrl } from "../_utils/baseurl";
 import { useLoginState } from "../_utils/storeuser";
 import fetchAvatar from "@/app/_helper/fetchAvatar";
 import showTost from "@/app/_helper/showToast";
@@ -76,7 +75,7 @@ export default function Login() {
         setButtonLoading(false);
         return;
       }
-      const response = await fetch(`${baseUrl}/api/auth/login`, {
+      const response = await fetch(`/api/auth/login`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -106,9 +105,9 @@ export default function Login() {
         setButtonLoading(false);
       } else {
         const data = await response.json();
-        router.push("/chat");
         setLoginUsername(data.username);
         setLoginUserId(data.id);
+        router.push("/chat");
       }
     } catch (e) {
       console.error(e);

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Form } from "@heroui/form";
 import RegisterButton from "./Registerbutton";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { baseUrl } from "../_utils/baseurl";
+import { useLoginState } from "../_utils/storeuser";
 
 export interface LoginData {
   username: string;
@@ -58,6 +58,7 @@ export default function Login() {
     pwdErrorMessage: "",
     unameErrorMessage: "",
   });
+  const { setLoginUsername, setLoginUserId } = useLoginState();
   async function onRegister(data: LoginData, setButtonLoading: (loading: boolean) => void) {
     try {
       setButtonLoading(true);
@@ -68,7 +69,7 @@ export default function Login() {
         setButtonLoading(false);
         return;
       }
-      const response = await fetch(`${baseUrl}/api/auth/register`, {
+      const response = await fetch(`/api/auth/register`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -89,7 +90,10 @@ export default function Login() {
         }
         setButtonLoading(false);
       } else {
+        const data = await response.json();
         showTost("Success", "注册成功,3秒后跳转", "success");
+        setLoginUsername(data.username);
+        setLoginUserId(data.id);
         setTimeout(() => {
           router.push("/chat");
         }, 3000);

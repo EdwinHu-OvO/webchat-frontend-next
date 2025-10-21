@@ -1,4 +1,3 @@
-import { baseUrl } from "@/app/_utils/baseurl";
 export interface MessageRowProps {
   id: number;
   sender: {
@@ -34,12 +33,12 @@ export default async function fetchMessages({
       return;
     } else if (activeSession.type === "friend") {
       const response = await fetch(
-        `${baseUrl}/api/messages/private?userId=${userId}&peerId=${activeSession.id}`,
+        `/api/messages/private?userId=${userId}&peerId=${activeSession.id}`,
       );
       const data = await response.json();
       setMessages(data);
     } else if (activeSession.type === "group") {
-      const response = await fetch(`${baseUrl}/api/messages/group/${activeSession.groupId}`);
+      const response = await fetch(`/api/messages/group/${activeSession.groupId}`);
       const data = await response.json();
       setMessages(data);
     }

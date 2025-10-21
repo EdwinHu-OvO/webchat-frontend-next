@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
 import type { ChatSocket } from "./_types/ChatSocket";
@@ -49,7 +48,7 @@ export default function FriendList({
   }, [activeSession]);
   async function fetchFriendList() {
     try {
-      const response = await fetch(`${baseUrl}/api/users/${userId}/friends`);
+      const response = await fetch(`/api/users/${userId}/friends`);
       const data = await response.json();
       setFriendList(data);
     } catch (error) {
@@ -61,7 +60,7 @@ export default function FriendList({
       <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
         <User
           avatarProps={{
-            src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
+            src: friend.friend.avatarUrl ? `${friend.friend.avatarUrl}` : "",
             name: friend.friend.username,
           }}
           description={`UserId:${friend.friend.id}`}

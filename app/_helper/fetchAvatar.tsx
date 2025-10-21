@@ -1,18 +1,17 @@
-import { baseUrl } from "@/app/_utils/baseurl";
 interface FetchAvatarProps {
   username: string;
   setAvatarUrl: (avatarUrl: string) => void;
 }
 export default async function fetchAvatar({ username, setAvatarUrl }: FetchAvatarProps) {
   try {
-    const response = await fetch(`${baseUrl}/api/users/search?username=${username}`, {
+    const response = await fetch(`/api/users/search?username=${username}`, {
       method: "GET",
     });
     const data = await response.json();
     if (response.ok) {
       if (data !== null) {
         if (data.avatarUrl !== null) {
-          setAvatarUrl(`${baseUrl}${data.avatarUrl}`);
+          setAvatarUrl(`${data.avatarUrl}`);
         } else {
           setAvatarUrl("");
         }

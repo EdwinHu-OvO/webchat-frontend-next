@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
 import type { ChatSocket } from "./_types/ChatSocket";
@@ -45,7 +44,7 @@ export default function GroupList({
   }, [activeSession]);
   async function fetchGroupList() {
     try {
-      const response = await fetch(`${baseUrl}/api/users/${userId}/groups`);
+      const response = await fetch(`/api/users/${userId}/groups`);
       const data = await response.json();
       setGroupList(data);
     } catch (error) {

@@ -1,26 +1,31 @@
 "use client";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Tabs,
+  Tab,
+  Button,
+  ToastProvider,
+  ScrollShadow,
+} from "@heroui/react";
 import { useLoginState } from "../_utils/storeuser";
-import Hitokoto from "@/components/hitokoto";
 import { useState, useEffect, useRef } from "react";
-import FriendList from "./FriendList";
-import fetchAvatar from "../_helper/fetchAvatar";
 import { useRouter } from "next/navigation";
+import fetchAvatar from "../_helper/fetchAvatar";
 import _Hitokoto from "./Hitokoto";
+import fetchMessages, { MessageRowProps } from "./_utils/fetchMessages";
+import Hitokoto from "@/components/hitokoto";
+import FriendList from "./FriendList";
 import GroupList from "./GroupList";
-import { Tabs, Tab } from "@heroui/tabs";
 import ChatSession from "./ChatSession";
 import UserInfo from "./UserInfo";
 import CreateGroup from "./CreateGroup";
-import { Button } from "@heroui/button";
-import { ToastProvider } from "@heroui/toast";
-import { ScrollShadow } from "@heroui/scroll-shadow";
-import AddFriend from "./AddFriend";
-import JoinGroup from "./JoinGroup";
+import AddButton from "./AddButton";
 import io from "socket.io-client";
 import type { ChatSocket } from "./_types/ChatSocket";
 import { socketUrl } from "@/app/_utils/baseurl";
-import fetchMessages, { MessageRowProps } from "./_utils/fetchMessages";
 
 export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
@@ -175,7 +180,7 @@ export default function Chat() {
             >
               <Tab key="friend" title="好友" className="p-0">
                 <div className="bg-content2 rounded-xl">
-                  <AddFriend userId={userId} setActiveSession={setActiveSession} />
+                  <AddButton type="friend" userId={userId} setActiveSession={setActiveSession} />
                   <ScrollShadow className="h-[calc(50.5vh)]">
                     <FriendList
                       userId={userId}
@@ -188,7 +193,7 @@ export default function Chat() {
               </Tab>
               <Tab key="group" title="群组" className="p-0">
                 <div className="bg-content2 rounded-xl">
-                  <JoinGroup userId={userId} setActiveSession={setActiveSession} />
+                  <AddButton type="group" userId={userId} setActiveSession={setActiveSession} />
                   <ScrollShadow className="h-[calc(50.5vh)]">
                     <GroupList
                       userId={userId}

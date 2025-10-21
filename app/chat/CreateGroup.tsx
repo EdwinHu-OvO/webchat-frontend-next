@@ -10,7 +10,6 @@ import {
 } from "@heroui/react";
 import showTost from "@/app/_helper/showToast";
 import { useState } from "react";
-import { baseUrl } from "../_utils/baseurl";
 interface CreateGroupProps {
   userId: string;
   setActiveSession: (session: {
@@ -32,7 +31,7 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
       return;
     }
     try {
-      const response = await fetch(`${baseUrl}/api/groups`, {
+      const response = await fetch(`/api/groups`, {
         method: "POST",
         body: JSON.stringify({ ownerId: userId, name: groupName }),
         headers: {
@@ -42,7 +41,6 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
       if (!response.ok) {
         throw new Error("创建群组失败");
       }
-      const data = await response.json();
       setGroupName("");
       showTost({
         title: "创建群组",
@@ -50,12 +48,6 @@ export default function CreateGroup({ userId, setActiveSession }: CreateGroupPro
         color: "success",
       });
       onClose();
-      setActiveSession({
-        id: "",
-        username: data.name,
-        type: "group",
-        groupId: data.id,
-      });
     } catch (error) {
       console.error(error);
       showTost({
