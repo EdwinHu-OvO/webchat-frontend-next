@@ -102,15 +102,9 @@ export default function ControlPanel({
           <Button color="default" size="md">
             邀请成员
           </Button>
-          {isOwnerFlag ? (
-            <Button color="danger" size="md" variant="light">
-              解散群组
-            </Button>
-          ) : (
-            <Button color="danger" size="md" variant="light">
-              退出群组
-            </Button>
-          )}
+          <Button color="danger" size="md" variant="light">
+            {isOwnerFlag ? "解散群组" : "退出群组"}
+          </Button>
         </>
       )}
     </span>
