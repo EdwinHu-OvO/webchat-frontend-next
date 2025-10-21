@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { useLoginState } from "../_utils/storeuser";
 import Hitokoto from "@/components/hitokoto";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import FriendList from "./FriendList";
 import fetchAvatar from "../_helper/fetchAvatar";
 import { useRouter } from "next/navigation";
@@ -20,12 +20,15 @@ import JoinGroup from "./JoinGroup";
 import io from "socket.io-client";
 import type { ChatSocket } from "./_types/ChatSocket";
 import { socketUrl } from "@/app/_utils/baseurl";
+import fetchMessages, { MessageRowProps } from "./_utils/fetchMessages";
 
 export default function Chat() {
   const [_username, set_Username] = useState<string>("loading");
   const { username, userId } = useLoginState();
   const router = useRouter();
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);
+  const [messages, setMessages] = useState<MessageRowProps[]>([]);
+
   // 监听 zustand 持久化水合完成
   useEffect(() => {
     const persistApi = useLoginState?.persist;
@@ -35,6 +38,7 @@ export default function Chat() {
       unsub?.();
     };
   }, []);
+
   // 路由跳转需放入副作用，避免在渲染期间更新 Router
   useEffect(() => {
     if (!hasHydrated) return;
@@ -55,17 +59,22 @@ export default function Chat() {
     type: null,
     groupId: "",
   });
+
+  // 保存最新的会话，供 socket 回调访问，避免因闭包导致读取到旧值
+  const activeSessionRef = useRef(activeSession);
+  useEffect(() => {
+    activeSessionRef.current = activeSession;
+  }, [activeSession]);
+
   useEffect(() => {
     if (!hasHydrated) return;
     if (!username || !userId) return;
     set_Username(username);
     fetchAvatar({ username: username, setAvatarUrl });
-
     const newSocket = io(socketUrl, {
       transports: ["websocket"],
       query: { userId: String(userId) },
     });
-
     const handleConnect = () => {
       setSocket(newSocket as unknown as ChatSocket);
     };
@@ -80,19 +89,40 @@ export default function Chat() {
         prev === (newSocket as unknown as ChatSocket) ? null : prev,
       );
     };
+    const handlePrivateMessage = (data: {
+      senderId: number;
+      receiverId: number;
+      content: string;
+    }) => {
+      const current = activeSessionRef.current;
+      if (current.type !== "friend") return;
+      if (data.receiverId === Number(userId) && data.senderId === Number(current.id)) {
+        fetchMessages({ userId, activeSession: current, setMessages });
+      }
+    };
+    const handleGroupMessage = (data: { senderId: number; groupId: number; content: string }) => {
+      console.log(data);
+      const current = activeSessionRef.current;
+      if (current.type !== "group") return;
+      if (data.groupId === Number(current.groupId) && data.senderId !== Number(userId)) {
+        fetchMessages({ userId, activeSession: current, setMessages });
+      }
+    };
 
     (newSocket as unknown as ChatSocket).on("connect", handleConnect);
     (newSocket as unknown as ChatSocket).on("connect_error", handleConnectError);
     (newSocket as unknown as ChatSocket).on("disconnect", handleDisconnect);
-
+    (newSocket as unknown as ChatSocket).on("private_message", handlePrivateMessage);
+    (newSocket as unknown as ChatSocket).on("group_message", handleGroupMessage);
     if ((newSocket as unknown as ChatSocket).connected) {
       handleConnect();
     }
-
     return () => {
       (newSocket as unknown as ChatSocket).off("connect", handleConnect);
       (newSocket as unknown as ChatSocket).off("connect_error", handleConnectError);
       (newSocket as unknown as ChatSocket).off("disconnect", handleDisconnect);
+      (newSocket as unknown as ChatSocket).off("private_message", handlePrivateMessage);
+      (newSocket as unknown as ChatSocket).off("group_message", handleGroupMessage);
       try {
         (newSocket as unknown as ChatSocket).close();
       } catch {}
@@ -151,6 +181,7 @@ export default function Chat() {
                       userId={userId}
                       setActiveSession={setActiveSession}
                       activeSession={activeSession}
+                      socket={socket}
                     />
                   </ScrollShadow>
                 </div>
@@ -163,6 +194,7 @@ export default function Chat() {
                       userId={userId}
                       setActiveSession={setActiveSession}
                       activeSession={activeSession}
+                      socket={socket}
                     />
                   </ScrollShadow>
                 </div>
@@ -175,6 +207,8 @@ export default function Chat() {
         </Card>
         {/* 右侧 */}
         <ChatSession
+          messages={messages}
+          setMessages={setMessages}
           socket={socket}
           activeSession={activeSession}
           setActiveSession={setActiveSession}

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { baseUrl } from "@/app/_utils/baseurl";
 import { User, Divider } from "@heroui/react";
 import { cn } from "@/utils/cn";
-
+import type { ChatSocket } from "./_types/ChatSocket";
 interface FriendListProps {
   userId: string;
   setActiveSession: (session: {
@@ -18,6 +18,7 @@ interface FriendListProps {
     type: "friend" | "group" | null;
     groupId: string;
   };
+  socket: ChatSocket | null;
 }
 interface Friend {
   friend: {
@@ -27,11 +28,17 @@ interface Friend {
   };
   id: string;
 }
-export default function FriendList({ userId, setActiveSession, activeSession }: FriendListProps) {
+export default function FriendList({
+  userId,
+  setActiveSession,
+  activeSession,
+  socket,
+}: FriendListProps) {
   const [friendList, setFriendList] = useState<Friend[]>([]);
   const [selectedListItem, setSelectedListItem] = useState<string | null>(null);
   useEffect(() => {
     fetchFriendList();
+    socket?.emit("leave_group", { groupId: activeSession.groupId });
     setActiveSession({ id: "", username: "未选择会话", type: null, groupId: "" });
   }, [userId]);
   useEffect(() => {
@@ -50,59 +57,31 @@ export default function FriendList({ userId, setActiveSession, activeSession }: 
     }
   }
   return friendList.map((friend, index) => {
-    if (index !== friendList.length - 1) {
-      return (
-        <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
-          <User
-            avatarProps={{
-              src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
-              name: friend.friend.username,
-            }}
-            description={`UserId:${friend.friend.id}`}
-            name={friend.friend.username}
-            className={cn(
-              "flex w-full justify-start rounded-xl p-3",
-              selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
-            )}
-            onClick={() => {
-              setSelectedListItem(friend.friend.id);
-              setActiveSession({
-                id: friend.friend.id,
-                username: friend.friend.username,
-                type: "friend",
-                groupId: "",
-              });
-            }}
-          />
-          <Divider className="w-[95%]" />
-        </div>
-      );
-    } else {
-      return (
-        <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
-          <User
-            avatarProps={{
-              src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
-              name: friend.friend.username,
-            }}
-            description={`UserId:${friend.friend.id}`}
-            name={friend.friend.username}
-            className={cn(
-              "flex w-full justify-start rounded-xl p-3",
-              selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
-            )}
-            onClick={() => {
-              setSelectedListItem(friend.friend.id);
-              setActiveSession({
-                id: friend.friend.id,
-                username: friend.friend.username,
-                type: "friend",
-                groupId: "",
-              });
-            }}
-          />
-        </div>
-      );
-    }
+    return (
+      <div key={friend.id} className="flex flex-col items-center px-2 first:mt-0 last:mb-0">
+        <User
+          avatarProps={{
+            src: friend.friend.avatarUrl ? `${baseUrl}${friend.friend.avatarUrl}` : "",
+            name: friend.friend.username,
+          }}
+          description={`UserId:${friend.friend.id}`}
+          name={friend.friend.username}
+          className={cn(
+            "flex w-full justify-start rounded-xl p-3",
+            selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
+          )}
+          onClick={() => {
+            setSelectedListItem(friend.friend.id);
+            setActiveSession({
+              id: friend.friend.id,
+              username: friend.friend.username,
+              type: "friend",
+              groupId: "",
+            });
+          }}
+        />
+        {index !== friendList.length - 1 && <Divider className="w-[95%]" />}
+      </div>
+    );
   });
 }
