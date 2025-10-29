@@ -84,16 +84,6 @@ export default function Chat() {
       setSocket(newSocket as unknown as ChatSocket);
     };
 
-    const handleConnectError = (err: unknown) => {
-      console.error("[socket] connect_error", err);
-    };
-
-    const handleDisconnect = (reason: unknown) => {
-      console.warn("[socket] disconnected", reason);
-      setSocket((prev: ChatSocket | null) =>
-        prev === (newSocket as unknown as ChatSocket) ? null : prev,
-      );
-    };
     const handlePrivateMessage = (data: {
       senderId: number;
       receiverId: number;
@@ -114,8 +104,6 @@ export default function Chat() {
     };
 
     (newSocket as unknown as ChatSocket).on("connect", handleConnect);
-    (newSocket as unknown as ChatSocket).on("connect_error", handleConnectError);
-    (newSocket as unknown as ChatSocket).on("disconnect", handleDisconnect);
     (newSocket as unknown as ChatSocket).on("private_message", handlePrivateMessage);
     (newSocket as unknown as ChatSocket).on("group_message", handleGroupMessage);
     if ((newSocket as unknown as ChatSocket).connected) {
@@ -123,8 +111,6 @@ export default function Chat() {
     }
     return () => {
       (newSocket as unknown as ChatSocket).off("connect", handleConnect);
-      (newSocket as unknown as ChatSocket).off("connect_error", handleConnectError);
-      (newSocket as unknown as ChatSocket).off("disconnect", handleDisconnect);
       (newSocket as unknown as ChatSocket).off("private_message", handlePrivateMessage);
       (newSocket as unknown as ChatSocket).off("group_message", handleGroupMessage);
       try {
@@ -148,7 +134,7 @@ export default function Chat() {
       <div className="fixed z-[100]">
         <ToastProvider placement={"top-center"} toastOffset={30} />
       </div>
-      <div className="flex h-screen w-screen">
+      <div className="mx-auto flex h-screen w-screen">
         {/* 左侧 */}
         <Card className="w-2/9 min-w-xs" shadow="none" radius="none">
           <CardHeader className="flex flex-col items-center justify-center pb-1">

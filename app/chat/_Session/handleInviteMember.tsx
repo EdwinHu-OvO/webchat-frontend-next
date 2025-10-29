@@ -1,4 +1,4 @@
-import getIdByName from "../_utils/getIdByName";
+import getIdByName from "../../_helper/getIdByName";
 import showTost from "@/app/_helper/showToast";
 interface HandleInviteMemberProps {
   username: string;

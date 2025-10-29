@@ -1,5 +1,5 @@
 import showTost from "@/app/_helper/showToast";
-import getIdByName from "./getIdByName";
+import getIdByName from "../../_helper/getIdByName";
 interface AddFriendProps {
   friendUsername: string;
   userId: string;

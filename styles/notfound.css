@@ -1,0 +1,224 @@
+
+:root {
+    --main-color1: #fff;
+    --text-color1: #000;
+    --main-color2: #27454b;
+    --text-color2: #def5ef;
+    --rotate1: -180deg;
+    --rotate2: 180deg;
+}
+body {
+    /* transition: all 1s; */
+    margin: 0;
+}
+h1 span {
+    transform: rotate(180deg);
+    display: inline-block;
+}
+.main {
+    transition: all 0.5s;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    z-index: -1;
+    background-color: var(--main-color1);
+    color: var(--text-color1);
+}
+.padding {
+    padding: 8px;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --main-color2: #fff;
+        --text-color2: #000;
+        --main-color1: #27454b;
+        --text-color1: #def5ef;
+        --rotate1: 0deg;
+        --rotate2: 180deg;
+    }
+    h1 span {
+        transform: rotate(180deg);
+    }
+    h1 {
+        transition: all 0.5s;
+        transform: rotate(var(--rotate1));
+    }
+    .notice::after {
+        content: "切换浅色模式 ：）";
+    }
+    .notice1::after {
+        content: "切换深色模式 ：）";
+    }
+}
+@media (prefers-color-scheme: light) {
+    .notice::after {
+        content: "切换深色模式 ：）";
+    }
+    .notice1::after {
+        content: "切换浅色模式 ：）";
+    }
+}
+#toggle:checked ~ .main {
+    background-color: var(--main-color2);
+    color: var(--text-color2);
+}
+#toggle:checked ~ .main h1 {
+    transition: all 0.3s;
+    transform: rotate(var(--rotate2));
+    transform-origin: unset;
+}
+#toggle ~ .main h1 {
+    transition: all 0.3s;
+    transform-origin: left top;
+}
+label {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    -webkit-user-select: none;
+    user-select: none;
+    font-size: 18px;
+    padding: 10px 30px 30px 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+label div {
+    padding: 3px;
+    background-color: yellow;
+}
+.notice-area {
+    display: flex;
+    justify-content: center;
+}
+.notice {
+    position: fixed;
+    text-align: center;
+    background-color: #1f97ff;
+    color: #ffffff;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    width: fit-content;
+    margin-top: -50px;
+    opacity: 0;
+    transition: opacity 0.3s, margin-top 0.3s;
+    pointer-events: none;
+}
+.notice1 {
+    position: fixed;
+    text-align: center;
+    background-color: #1f97ff;
+    color: #ffffff;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    width: fit-content;
+    margin-top: -50px;
+    opacity: 0;
+    transition: opacity 0.3s, margin-top 0.3s;
+    pointer-events: none;
+}
+/* 切换动画部分 */
+#toggle:checked ~ .notice-area .notice {
+    display: block;
+    animation: notification 1.8s forwards;
+}
+#toggle:not(:checked) ~ .notice-area .notice1 {
+    display: block;
+    animation: notification 1.8s forwards;
+}
+#toggle:checked ~ .main .animated-text {
+    animation: flying 0.8s;
+}
+#toggle:not(:checked) ~ .main .animated-text {
+    animation: flying-rev 0.8s;
+}
+@keyframes notification {
+    0% {
+        margin-top: -50px;
+        opacity: 0;
+    }
+    15% {
+        margin-top: 20px;
+        opacity: 1;
+    }
+    85% {
+        margin-top: 20px;
+        opacity: 1;
+    }
+    100% {
+        margin-top: -50px;
+        opacity: 0;
+    }
+}
+@keyframes flying {
+    0% {
+        transform: translate(0, 0);
+    }
+    10% {
+        transform: translate(100px, 50px) rotate(45deg);
+    }
+    20% {
+        transform: translate(200px, -80px) rotate(90deg);
+    }
+    30% {
+        transform: translate(50px, 200px) rotate(135deg);
+    }
+    40% {
+        transform: translate(-100px, 150px) rotate(180deg);
+    }
+    50% {
+        transform: translate(-200px, -100px) rotate(225deg);
+    }
+    60% {
+        transform: translate(150px, -200px) rotate(270deg);
+    }
+    70% {
+        transform: translate(-150px, -180px) rotate(315deg);
+    }
+    80% {
+        transform: translate(180px, 100px) rotate(360deg);
+    }
+    90% {
+        transform: translate(-50px, -50px) rotate(405deg);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}
+@keyframes flying-rev {
+    0% {
+        transform: translate(0, 0);
+    }
+    10% {
+        transform: translate(100px, 50px) rotate(45deg);
+    }
+    20% {
+        transform: translate(200px, -80px) rotate(90deg);
+    }
+    30% {
+        transform: translate(50px, 200px) rotate(135deg);
+    }
+    40% {
+        transform: translate(-100px, 150px) rotate(180deg);
+    }
+    50% {
+        transform: translate(-200px, -100px) rotate(225deg);
+    }
+    60% {
+        transform: translate(150px, -200px) rotate(270deg);
+    }
+    70% {
+        transform: translate(-150px, -180px) rotate(315deg);
+    }
+    80% {
+        transform: translate(180px, 100px) rotate(360deg);
+    }
+    90% {
+        transform: translate(-50px, -50px) rotate(405deg);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}

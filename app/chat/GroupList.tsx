@@ -58,7 +58,7 @@ export default function GroupList({
           description={`GroupId:${group.id}`}
           name={group.name}
           className={cn(
-            "flex w-full justify-start rounded-xl p-3",
+            "flex w-full justify-start rounded-xl p-3 hover:bg-[#e5eef5cc]",
             selectedListItem === group.id && "bg-[#e5eef5cc]",
           )}
           avatarProps={{

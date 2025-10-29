@@ -66,7 +66,7 @@ export default function FriendList({
           description={`UserId:${friend.friend.id}`}
           name={friend.friend.username}
           className={cn(
-            "flex w-full justify-start rounded-xl p-3",
+            "flex w-full justify-start rounded-xl p-3 hover:bg-[#e5eef5cc]",
             selectedListItem === friend.friend.id && "bg-[#e5eef5cc]",
           )}
           onClick={() => {
